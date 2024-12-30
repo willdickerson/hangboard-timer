@@ -1,55 +1,56 @@
-import React, { useState, useEffect } from 'react';
-import { Play, Pause, RotateCcw, ChevronDown, ChevronUp, Volume2, VolumeX, Info } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react'
+import PropTypes from 'prop-types'
+import { Play, Pause, RotateCcw, ChevronDown, ChevronUp, Volume2, VolumeX, Info } from 'lucide-react'
 
 const WORKOUT_STEPS = [
-    { name: "Warm-up: Hang on Jug", duration: 10, sound: "start" },
-    { name: "Warm-up: Rest", duration: 60, sound: "rest" },
-    { name: "Warm-up: Hang on Jug", duration: 10, sound: "start" },
-    { name: "Warm-up: Rest", duration: 60, sound: "rest" },
-    { name: "Warm-up: 6 Pull-ups", duration: 20, sound: "start" },
-    { name: "Warm-up: Rest", duration: 60, sound: "rest" },
-    { name: "Warm-up: 6 Pull-ups", duration: 20, sound: "start" },
-    { name: "Warm-up: Rest", duration: 60, sound: "rest" },
-    { name: "Warm-up: Chisel Grip", duration: 10, sound: "start" },
-    { name: "Warm-up: Rest", duration: 60, sound: "rest" },
-    { name: "Warm-up: Half Crimp", duration: 10, sound: "start" },
-    { name: "Warm-up: Rest", duration: 60, sound: "rest" },
-    { name: "Warm-up: Three Finger Drag", duration: 10, sound: "start" },
-    { name: "Warm-up: Rest", duration: 60, sound: "rest" },
-    { name: "Warm-up: Half Crimp", duration: 10, sound: "start" },
-    { name: "Main: Rest", duration: 120, sound: "rest" },
-    { name: "Main: Chisel Grip", duration: 10, sound: "start" },
-    { name: "Main: Rest", duration: 120, sound: "rest" },
-    { name: "Main: Chisel Grip", duration: 10, sound: "start" },
-    { name: "Main: Rest", duration: 120, sound: "rest" },
-    { name: "Main: Chisel Grip", duration: 10, sound: "start" },
-    { name: "Main: Rest", duration: 120, sound: "rest" },
-    { name: "Main: Half Crimp", duration: 10, sound: "start" },
-    { name: "Main: Rest", duration: 120, sound: "rest" },
-    { name: "Main: Half Crimp", duration: 10, sound: "start" },
-    { name: "Main: Rest", duration: 120, sound: "rest" },
-    { name: "Main: Half Crimp", duration: 10, sound: "start" },
-    { name: "Main: Rest", duration: 120, sound: "rest" },
-    { name: "Main: Three Finger Drag", duration: 10, sound: "start" },
-    { name: "Main: Rest", duration: 120, sound: "rest" },
-    { name: "Main: Three Finger Drag", duration: 10, sound: "start" },
-    { name: "Main: Rest", duration: 120, sound: "rest" },
-    { name: "Main: Three Finger Drag", duration: 10, sound: "start" },
-    { name: "Main: Rest", duration: 120, sound: "rest" },
-    { name: "Main: 12 Pull-ups", duration: 40, sound: "start" },
-];
+  { name: "Warm-up: Hang on Jug", duration: 10, sound: "start" },
+  { name: "Warm-up: Rest", duration: 60, sound: "rest" },
+  { name: "Warm-up: Hang on Jug", duration: 10, sound: "start" },
+  { name: "Warm-up: Rest", duration: 60, sound: "rest" },
+  { name: "Warm-up: 6 Pull-ups", duration: 20, sound: "start" },
+  { name: "Warm-up: Rest", duration: 60, sound: "rest" },
+  { name: "Warm-up: 6 Pull-ups", duration: 20, sound: "start" },
+  { name: "Warm-up: Rest", duration: 60, sound: "rest" },
+  { name: "Warm-up: Chisel Grip", duration: 10, sound: "start" },
+  { name: "Warm-up: Rest", duration: 60, sound: "rest" },
+  { name: "Warm-up: Half Crimp", duration: 10, sound: "start" },
+  { name: "Warm-up: Rest", duration: 60, sound: "rest" },
+  { name: "Warm-up: Three Finger Drag", duration: 10, sound: "start" },
+  { name: "Warm-up: Rest", duration: 60, sound: "rest" },
+  { name: "Warm-up: Half Crimp", duration: 10, sound: "start" },
+  { name: "Main: Rest", duration: 120, sound: "rest" },
+  { name: "Main: Chisel Grip", duration: 10, sound: "start" },
+  { name: "Main: Rest", duration: 120, sound: "rest" },
+  { name: "Main: Chisel Grip", duration: 10, sound: "start" },
+  { name: "Main: Rest", duration: 120, sound: "rest" },
+  { name: "Main: Chisel Grip", duration: 10, sound: "start" },
+  { name: "Main: Rest", duration: 120, sound: "rest" },
+  { name: "Main: Half Crimp", duration: 10, sound: "start" },
+  { name: "Main: Rest", duration: 120, sound: "rest" },
+  { name: "Main: Half Crimp", duration: 10, sound: "start" },
+  { name: "Main: Rest", duration: 120, sound: "rest" },
+  { name: "Main: Half Crimp", duration: 10, sound: "start" },
+  { name: "Main: Rest", duration: 120, sound: "rest" },
+  { name: "Main: Three Finger Drag", duration: 10, sound: "start" },
+  { name: "Main: Rest", duration: 120, sound: "rest" },
+  { name: "Main: Three Finger Drag", duration: 10, sound: "start" },
+  { name: "Main: Rest", duration: 120, sound: "rest" },
+  { name: "Main: Three Finger Drag", duration: 10, sound: "start" },
+  { name: "Main: Rest", duration: 120, sound: "rest" },
+  { name: "Main: 12 Pull-ups", duration: 40, sound: "start" },
+]
 
 const sounds = {
   begin: new Audio("sounds/begin.mp3"),
   start: new Audio("sounds/start.mp3"),
-  rest: new Audio("sounds/stop.mp3")
-};
+  rest: new Audio("sounds/stop.mp3"),
+}
 
 const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-};
+  const mins = Math.floor(seconds / 60)
+  const secs = seconds % 60
+  return `${mins}:${secs.toString().padStart(2, '0')}`
+}
 
 const WorkoutPreview = ({ steps, currentStep, isExpanded, onToggle }) => {
   return (
@@ -80,11 +81,24 @@ const WorkoutPreview = ({ steps, currentStep, isExpanded, onToggle }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
+
+WorkoutPreview.propTypes = {
+  steps: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      duration: PropTypes.number.isRequired,
+      sound: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  currentStep: PropTypes.number.isRequired,
+  isExpanded: PropTypes.bool.isRequired,
+  onToggle: PropTypes.func.isRequired,
+}
 
 const ProgressBar = ({ current, total }) => {
-  const percentage = (current / total) * 100;
+  const percentage = (current / total) * 100
   return (
     <div className="w-full bg-gray-700/50 rounded-full h-2.5">
       <div 
@@ -94,96 +108,122 @@ const ProgressBar = ({ current, total }) => {
         <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-green-600 animate-pulse" />
       </div>
     </div>
-  );
-};
+  )
+}
+
+ProgressBar.propTypes = {
+  current: PropTypes.number.isRequired,
+  total: PropTypes.number.isRequired,
+}
 
 const Timer = () => {
-  const [currentStepIndex, setCurrentStepIndex] = useState(-1);
-  const [timeLeft, setTimeLeft] = useState(15);
-  const [isPaused, setIsPaused] = useState(false);
-  const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
-  const [isStarted, setIsStarted] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [showInfo, setShowInfo] = useState(false);
-  
-  useEffect(() => {
-    let interval = null;
-    
-    if (isStarted && (currentStepIndex >= -1) && !isPaused && timeLeft > 0) {
-      interval = setInterval(() => {
-        setTimeLeft(time => time - 1);
-      }, 1000);
+  const [currentStepIndex, setCurrentStepIndex] = useState(-1)
+  const [timeLeft, setTimeLeft] = useState(15)
+  const [isPaused, setIsPaused] = useState(false)
+  const [isPreviewExpanded, setIsPreviewExpanded] = useState(false)
+  const [isStarted, setIsStarted] = useState(false)
+  const [isMuted, setIsMuted] = useState(false)
+  const [showInfo, setShowInfo] = useState(false)
+  const [isAudioUnlocked, setIsAudioUnlocked] = useState(false)
+
+  const unlockAudio = useCallback(async () => {
+    for (const audio of Object.values(sounds)) {
+      try {
+        await audio.play()
+        audio.pause()
+        audio.currentTime = 0
+      } catch (error) {
+        console.log("Error unlocking audio:", error)
+      }
     }
-    
-    return () => clearInterval(interval);
-  }, [currentStepIndex, isPaused, timeLeft, isStarted]);
-  
+    setIsAudioUnlocked(true)
+  }, [])
+
+  const playSound = useCallback((type) => {
+    if (!isMuted && sounds[type]) {
+      sounds[type].currentTime = 0
+      sounds[type].play().catch((error) => {
+        console.log("Error playing sound:", error)
+        if (!isAudioUnlocked) {
+          unlockAudio()
+        }
+      })
+    }
+  }, [isMuted, isAudioUnlocked, unlockAudio])
+
+  const nextStep = useCallback(() => {
+    if (currentStepIndex + 1 < WORKOUT_STEPS.length) {
+      const nextStepIndex = currentStepIndex + 1
+      setCurrentStepIndex(nextStepIndex)
+      setTimeLeft(WORKOUT_STEPS[nextStepIndex].duration)
+      playSound(WORKOUT_STEPS[nextStepIndex].sound)
+    } else {
+      setCurrentStepIndex(-2)
+      setIsStarted(false)
+      playSound('rest')
+    }
+  }, [currentStepIndex, playSound])
+
+  useEffect(() => {
+    let interval = null
+
+    if (isStarted && currentStepIndex >= -1 && !isPaused && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft((time) => time - 1)
+      }, 1000)
+    }
+
+    return () => clearInterval(interval)
+  }, [currentStepIndex, isPaused, timeLeft, isStarted])
+
   useEffect(() => {
     if (isStarted && timeLeft === 0) {
       if (currentStepIndex === -1) {
-        setCurrentStepIndex(0);
-        setTimeLeft(WORKOUT_STEPS[0].duration);
-        playSound(WORKOUT_STEPS[0].sound);
+        setCurrentStepIndex(0)
+        setTimeLeft(WORKOUT_STEPS[0].duration)
+        playSound(WORKOUT_STEPS[0].sound)
       } else {
-        nextStep();
+        nextStep()
       }
     }
-  }, [timeLeft, isStarted, currentStepIndex]);
-  
-  const startTimer = () => {
-    if (currentStepIndex === -1) {
-      setIsStarted(true);
-      setTimeLeft(15);
-      setCurrentStepIndex(-1);
-      playSound('begin');
-    }
-  };
-  
-  const nextStep = () => {
-    if (currentStepIndex + 1 < WORKOUT_STEPS.length) {
-      const nextStepIndex = currentStepIndex + 1;
-      setCurrentStepIndex(nextStepIndex);
-      setTimeLeft(WORKOUT_STEPS[nextStepIndex].duration);
-      playSound(WORKOUT_STEPS[nextStepIndex].sound);
-    } else {
-      // Workout complete
-      setCurrentStepIndex(-2);
-      setIsStarted(false);
-      playSound('rest');
-    }
-  };
-  
-  const resetTimer = () => {
-    setCurrentStepIndex(-1);
-    setTimeLeft(15);
-    setIsPaused(false);
-    setIsStarted(false);
-  };
-  
-  const togglePause = () => {
-    setIsPaused(!isPaused);
-  };
-  
-  const getCurrentStepName = () => {
-    if (currentStepIndex === -1) return "Get Ready!";
-    if (currentStepIndex === -2) return "Workout Complete!";
-    return WORKOUT_STEPS[currentStepIndex].name;
-  };
-  
-  const getNextStepName = () => {
-    if (currentStepIndex === -1) return WORKOUT_STEPS[0].name;
-    if (currentStepIndex >= WORKOUT_STEPS.length - 1) return "";
-    return WORKOUT_STEPS[currentStepIndex + 1].name;
-  };
+  }, [timeLeft, isStarted, currentStepIndex, nextStep, playSound])
 
-  const playSound = (type) => {
-    if (sounds[type] && !isMuted) {
-      sounds[type].currentTime = 0;
-      sounds[type].play().catch(error => {
-        console.log('Error playing sound:', error);
-      });
+  const startTimer = useCallback(async () => {
+    if (currentStepIndex === -1) {
+      if (!isAudioUnlocked) {
+        await unlockAudio()
+      }
+
+      setIsStarted(true)
+      setTimeLeft(15)
+      setCurrentStepIndex(-1)
+
+      playSound('begin')
     }
-  };
+  }, [currentStepIndex, isAudioUnlocked, unlockAudio, playSound])
+
+  const resetTimer = useCallback(() => {
+    setCurrentStepIndex(-1)
+    setTimeLeft(15)
+    setIsPaused(false)
+    setIsStarted(false)
+  }, [])
+
+  const togglePause = useCallback(() => {
+    setIsPaused(prev => !prev)
+  }, [])
+
+  const getCurrentStepName = useCallback(() => {
+    if (currentStepIndex === -1) return "Get Ready!"
+    if (currentStepIndex === -2) return "Workout Complete!"
+    return WORKOUT_STEPS[currentStepIndex].name
+  }, [currentStepIndex])
+
+  const getNextStepName = useCallback(() => {
+    if (currentStepIndex === -1) return WORKOUT_STEPS[0].name
+    if (currentStepIndex >= WORKOUT_STEPS.length - 1) return ""
+    return WORKOUT_STEPS[currentStepIndex + 1].name
+  }, [currentStepIndex])
 
   return (
     <div className="w-full max-w-md space-y-4 py-2">
@@ -205,8 +245,11 @@ const Timer = () => {
       {showInfo && (
         <div className="bg-gray-800/50 backdrop-blur-sm p-4 rounded-xl border border-gray-700 text-sm text-gray-300">
           <h3 className="font-medium text-white mb-2">About this workout</h3>
-          <p>This hangboard workout is designed for intermediate climbers to improve finger strength and endurance. 
-             Always warm up properly and listen to your body. Stop if you experience any pain.</p>
+          <p>
+            This hangboard workout is designed for intermediate climbers to
+            improve finger strength and endurance. Always warm up properly and
+            listen to your body. Stop if you experience any pain.
+          </p>
         </div>
       )}
       
@@ -242,8 +285,8 @@ const Timer = () => {
             <button
               onClick={startTimer}
               className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 
-                       text-white px-8 py-4 rounded-xl flex items-center gap-2 font-medium shadow-lg 
-                       transition-all duration-300 transform hover:scale-105"
+                         text-white px-8 py-4 rounded-xl flex items-center gap-2 font-medium shadow-lg 
+                         transition-all duration-300 transform hover:scale-105"
             >
               <Play size={24} /> Start Workout
             </button>
@@ -252,9 +295,11 @@ const Timer = () => {
               <button
                 onClick={togglePause}
                 className={`px-6 py-3 rounded-xl flex items-center gap-2 font-medium transition-all duration-300 
-                         ${isPaused 
-                           ? 'bg-green-600 hover:bg-green-700' 
-                           : 'bg-yellow-600 hover:bg-yellow-700'}`}
+                  ${
+                    isPaused
+                      ? 'bg-green-600 hover:bg-green-700'
+                      : 'bg-yellow-600 hover:bg-yellow-700'
+                  }`}
                 disabled={currentStepIndex === -2}
               >
                 {isPaused ? <Play size={20} /> : <Pause size={20} />}
@@ -263,7 +308,7 @@ const Timer = () => {
               <button
                 onClick={resetTimer}
                 className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl flex items-center gap-2 
-                         font-medium transition-colors"
+                           font-medium transition-colors"
               >
                 <RotateCcw size={20} /> Reset
               </button>
@@ -273,7 +318,7 @@ const Timer = () => {
       </div>
 
       <div className="text-gray-400 text-sm text-center">
-        Workout adapted from Dave MacLeod's&nbsp;
+        Workout adapted from Dave MacLeod&apos;s&nbsp;
         <a
           href="https://www.youtube.com/watch?v=PebF3NyEGPc"
           className="text-green-400 hover:text-green-300 underline transition-colors"
@@ -284,7 +329,7 @@ const Timer = () => {
         </a>.
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Timer;
+export default Timer
