@@ -137,6 +137,7 @@ const Timer = () => {
 
   const unlockAudio = useCallback(async () => {
     for (const audio of Object.values(sounds)) {
+      audio.muted = true
       try {
         await audio.play()
         audio.pause()
@@ -144,6 +145,9 @@ const Timer = () => {
       } catch (error) {
         console.log('Error unlocking audio:', error)
       }
+    }
+    for (const audio of Object.values(sounds)) {
+      audio.muted = false
     }
     setIsAudioUnlocked(true)
   }, [])
