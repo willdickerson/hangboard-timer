@@ -44,7 +44,7 @@ function App() {
       <div className="shrink-0 border-t-2 border-gray-700/50">
         <footer className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-center">
           <p className="text-sm text-gray-400">
-            Made by{" "}
+            Made by{' '}
             <a
               href="https://github.com/willdickerson"
               className="text-green-400 hover:text-green-300 transition-colors"
