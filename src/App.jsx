@@ -2,7 +2,7 @@ import Timer from './components/Timer'
 
 function App() {
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-200">
+    <div className="fixed inset-0 flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-200">
       <div className="shrink-0 border-b-2 border-gray-700/50">
         <header className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -35,8 +35,8 @@ function App() {
         </header>
       </div>
 
-      <main className="flex-1 overflow-auto">
-        <div className="h-full flex items-center justify-center">
+      <main className="flex-1 overflow-y-auto mt-10">
+        <div className="min-h-full w-full flex justify-center px-6">
           <Timer />
         </div>
       </main>
