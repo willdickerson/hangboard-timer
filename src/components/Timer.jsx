@@ -40,9 +40,9 @@ const WORKOUT_STEPS = [
 ];
 
 const sounds = {
-    begin: new Audio("/sounds/begin.mp3"),
-    start: new Audio("/sounds/start.mp3"),
-    rest: new Audio("/sounds/stop.mp3")
+  begin: new Audio("sounds/begin.mp3"),
+  start: new Audio("sounds/start.mp3"),
+  rest: new Audio("sounds/stop.mp3")
 };
 
 const formatTime = (seconds) => {
