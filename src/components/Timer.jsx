@@ -281,7 +281,7 @@ const Timer = () => {
           rel="noopener noreferrer"
         >
           follow along workout
-        </a>
+        </a>.
       </div>
     </div>
   );
