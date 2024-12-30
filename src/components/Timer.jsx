@@ -10,6 +10,9 @@ import {
   VolumeX,
   Info,
 } from 'lucide-react'
+import NoSleep from 'nosleep.js'
+
+const noSleep = new NoSleep()
 
 const WORKOUT_STEPS = [
   { name: 'Warm-up: Hang on Jug', duration: 10, sound: 'start' },
@@ -209,6 +212,8 @@ const Timer = () => {
       if (!isAudioUnlocked) {
         await unlockAudio()
       }
+
+      noSleep.enable()
 
       setIsStarted(true)
       setTimeLeft(15)
