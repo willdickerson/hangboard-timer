@@ -22,4 +22,5 @@ export interface WorkoutPreviewProps {
   currentStep: number
   isExpanded: boolean
   onToggle: () => void
+  isDark: boolean
 }

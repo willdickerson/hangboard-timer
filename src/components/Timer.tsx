@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { Play, Pause, RotateCcw, Volume2, VolumeX, Info } from 'lucide-react'
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  Volume2,
+  VolumeX,
+  Info,
+  Sun,
+  Moon,
+} from 'lucide-react'
 import NoSleep from 'nosleep.js'
 
 import WorkoutPreview from './WorkoutPreview'
@@ -9,7 +18,12 @@ import type { SoundType } from '../types/workout'
 
 const noSleep = new NoSleep()
 
-const Timer: React.FC = () => {
+interface TimerProps {
+  isDark: boolean
+  onThemeToggle: () => void
+}
+
+const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(-1)
   const [timeLeft, setTimeLeft] = useState<number>(15)
   const [isPaused, setIsPaused] = useState<boolean>(false)
@@ -109,6 +123,7 @@ const Timer: React.FC = () => {
     setTimeLeft(15)
     setIsPaused(false)
     setIsStarted(false)
+    noSleep.disable()
   }, [])
 
   const togglePause = useCallback(() => {
@@ -132,14 +147,29 @@ const Timer: React.FC = () => {
       <div className="flex justify-end space-x-2">
         <button
           onClick={() => setIsMuted(!isMuted)}
-          className="p-2 rounded-lg hover:bg-gray-700/50 transition-colors"
+          className={`p-2 rounded-lg ${
+            isDark ? 'hover:bg-gray-700/50' : 'hover:bg-gray-100'
+          } transition-colors`}
           aria-label={isMuted ? 'Unmute' : 'Mute'}
         >
           {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
         </button>
+
+        <button
+          onClick={onThemeToggle}
+          className={`p-2 rounded-lg ${
+            isDark ? 'hover:bg-gray-700/50' : 'hover:bg-gray-100'
+          } transition-colors`}
+          aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          {isDark ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
+
         <button
           onClick={() => setShowInfo(!showInfo)}
-          className="p-2 rounded-lg hover:bg-gray-700/50 transition-colors"
+          className={`p-2 rounded-lg ${
+            isDark ? 'hover:bg-gray-700/50' : 'hover:bg-gray-100'
+          } transition-colors`}
           aria-label="Toggle Information"
         >
           <Info size={20} />
@@ -147,8 +177,20 @@ const Timer: React.FC = () => {
       </div>
 
       {showInfo && (
-        <div className="bg-gray-800/50 backdrop-blur-sm p-4 rounded-xl border border-gray-700 text-sm text-gray-300">
-          <h3 className="font-medium text-white mb-2">About this workout</h3>
+        <div
+          className={`${
+            isDark ? 'bg-gray-800/50' : 'bg-white'
+          } p-4 rounded-xl border ${
+            isDark ? 'border-gray-700' : 'border-gray-200'
+          } text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}
+        >
+          <h3
+            className={`font-medium ${
+              isDark ? 'text-white' : 'text-gray-600'
+            } mb-2`}
+          >
+            About this workout
+          </h3>
           <p>
             This hangboard workout is designed for intermediate climbers to
             improve finger strength and endurance. Always warm up properly and
@@ -162,24 +204,38 @@ const Timer: React.FC = () => {
         currentStep={currentStepIndex}
         isExpanded={isPreviewExpanded}
         onToggle={() => setIsPreviewExpanded(!isPreviewExpanded)}
+        isDark={isDark}
       />
 
-      <div className="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl border border-gray-700 shadow-lg">
+      <div
+        className={`${
+          isDark ? 'bg-gray-800/50' : 'bg-white'
+        } p-6 rounded-xl border ${
+          isDark ? 'border-gray-700' : 'border-gray-200'
+        }`}
+      >
         <h1 className="text-2xl font-bold mb-2 bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">
           {getCurrentStepName()}
         </h1>
 
-        <div className="text-7xl font-bold my-6 font-mono tabular-nums">
+        <div
+          className={`text-7xl font-bold my-6 font-mono tabular-nums ${
+            isDark ? 'text-gray-100' : 'text-gray-800'
+          }`}
+        >
           {formatTime(timeLeft)}
         </div>
 
         {getNextStepName() && (
-          <div className="text-gray-400 mb-4">Next: {getNextStepName()}</div>
+          <div className={isDark ? 'text-gray-400' : 'text-gray-500'}>
+            Next: {getNextStepName()}
+          </div>
         )}
 
         <ProgressBar
           current={currentStepIndex + 1}
           total={WORKOUT_STEPS.length}
+          isDark={isDark}
         />
 
         <div className="flex justify-center gap-4 mt-6">
@@ -187,8 +243,8 @@ const Timer: React.FC = () => {
             <button
               onClick={startTimer}
               className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 
-                         text-white px-8 py-4 rounded-xl flex items-center gap-2 font-medium shadow-lg 
-                         transition-all duration-300 transform hover:scale-105"
+                text-white px-8 py-4 rounded-xl flex items-center gap-2 font-medium 
+                transition-all duration-300 transform hover:scale-105"
               aria-label="Start Workout"
             >
               <Play size={24} /> Start Workout
@@ -198,11 +254,8 @@ const Timer: React.FC = () => {
               <button
                 onClick={togglePause}
                 className={`px-6 py-3 rounded-xl flex items-center gap-2 font-medium transition-all duration-300 
-                  ${
-                    isPaused
-                      ? 'bg-green-600 hover:bg-green-700'
-                      : 'bg-yellow-600 hover:bg-yellow-700'
-                  }`}
+                  ${isPaused ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-amber-600 hover:bg-amber-700'} 
+                  text-white`}
                 disabled={currentStepIndex === -2}
                 aria-label={isPaused ? 'Resume Workout' : 'Pause Workout'}
               >
@@ -212,7 +265,7 @@ const Timer: React.FC = () => {
               <button
                 onClick={resetTimer}
                 className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl flex items-center gap-2 
-                           font-medium transition-colors"
+                  font-medium transition-colors"
                 aria-label="Reset Workout"
               >
                 <RotateCcw size={20} /> Reset
@@ -222,17 +275,19 @@ const Timer: React.FC = () => {
         </div>
       </div>
 
-      <div className="text-gray-400 text-sm text-center">
-        Workout adapted from Dave MacLeod&apos;s&nbsp;
-        <a
-          href="https://www.youtube.com/watch?v=PebF3NyEGPc"
-          className="text-green-400 hover:text-green-300 underline transition-colors"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          follow along workout
-        </a>
-        .
+      <div className={isDark ? 'text-gray-400' : 'text-gray-500'}>
+        <p className="text-sm text-center">
+          Workout adapted from Dave MacLeod&apos;s{' '}
+          <a
+            href="https://www.youtube.com/watch?v=PebF3NyEGPc"
+            className="text-green-400 hover:text-green-300 underline transition-colors"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            follow along workout
+          </a>
+          .
+        </p>
       </div>
     </div>
   )

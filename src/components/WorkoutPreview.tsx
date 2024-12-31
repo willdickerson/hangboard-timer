@@ -13,12 +13,23 @@ const WorkoutPreview: React.FC<WorkoutPreviewProps> = ({
   currentStep,
   isExpanded,
   onToggle,
+  isDark,
 }) => {
   return (
-    <div className="w-full bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden border border-gray-700">
+    <div
+      className={`w-full ${
+        isDark ? 'bg-gray-800/50' : 'bg-white'
+      } backdrop-blur-sm rounded-xl overflow-hidden border ${
+        isDark ? 'border-gray-700' : 'border-gray-200'
+      }`}
+    >
       <button
         onClick={onToggle}
-        className="w-full p-4 flex items-center justify-between text-gray-200 hover:bg-gray-700/50 transition-colors"
+        className={`w-full p-4 flex items-center justify-between ${
+          isDark
+            ? 'text-gray-200 hover:bg-gray-700/50'
+            : 'text-gray-600 hover:bg-gray-100'
+        } transition-colors`}
         aria-expanded={isExpanded}
         aria-controls="workout-steps"
       >
@@ -33,8 +44,8 @@ const WorkoutPreview: React.FC<WorkoutPreviewProps> = ({
               key={index}
               className={`flex justify-between py-3 px-4 rounded-lg mb-2 transition-colors ${
                 index === currentStep
-                  ? 'bg-green-500/20 border border-green-500/30 text-green-400'
-                  : 'text-gray-300 hover:bg-gray-700/30'
+                  ? 'bg-emerald-500/20 border border-emerald-500/30 text-emerald-600'
+                  : `${isDark ? 'text-gray-300 hover:bg-gray-700/30' : 'text-gray-600 hover:bg-gray-50'}`
               }`}
               aria-current={index === currentStep ? 'step' : undefined}
             >
