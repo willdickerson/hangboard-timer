@@ -130,14 +130,14 @@ const Timer = () => {
       <div className="flex justify-end space-x-2">
         <button
           onClick={() => setIsMuted(!isMuted)}
-          className="p-2 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 transition-colors"
+          className="p-2 rounded-lg hover:bg-gray-700/50 transition-colors"
           aria-label={isMuted ? 'Unmute' : 'Mute'}
         >
           {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
         </button>
         <button
           onClick={() => setShowInfo(!showInfo)}
-          className="p-2 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 transition-colors"
+          className="p-2 rounded-lg hover:bg-gray-700/50 transition-colors"
           aria-label="Toggle Information"
         >
           <Info size={20} />
