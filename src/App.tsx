@@ -1,6 +1,7 @@
+import React from 'react'
 import Timer from './components/Timer'
 
-function App() {
+const App: React.FC = () => {
   return (
     <div className="fixed inset-0 flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-200">
       <div className="shrink-0 border-b-2 border-gray-700/50">

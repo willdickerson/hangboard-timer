@@ -2,8 +2,9 @@ import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, vi, expect } from 'vitest'
 import WorkoutPreview from '../WorkoutPreview'
+import type { WorkoutStep } from '../../types/workout'
 
-const steps = [
+const steps: WorkoutStep[] = [
   { name: 'Step 1', duration: 10, sound: 'start' },
   { name: 'Step 2', duration: 20, sound: 'rest' },
 ]

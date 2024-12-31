@@ -1,4 +1,6 @@
-export const WORKOUT_STEPS = [
+import type { WorkoutStep, Sound, Sounds } from '../types/workout'
+
+export const WORKOUT_STEPS: WorkoutStep[] = [
   { name: 'Warm-up: Hang on Jug', duration: 10, sound: 'start' },
   { name: 'Warm-up: Rest', duration: 60, sound: 'rest' },
   { name: 'Warm-up: Hang on Jug', duration: 10, sound: 'start' },
@@ -34,15 +36,15 @@ export const WORKOUT_STEPS = [
   { name: 'Main: Three Finger Drag', duration: 10, sound: 'start' },
   { name: 'Main: Rest', duration: 120, sound: 'rest' },
   { name: 'Main: 12 Pull-ups', duration: 40, sound: 'start' },
-]
+] as const
 
-export const sounds = {
-  begin: new Audio('sounds/begin.mp3'),
-  start: new Audio('sounds/start.mp3'),
-  rest: new Audio('sounds/stop.mp3'),
+export const sounds: Sounds = {
+  begin: new Audio('sounds/begin.mp3') as Sound,
+  start: new Audio('sounds/start.mp3') as Sound,
+  rest: new Audio('sounds/stop.mp3') as Sound,
 }
 
-export const formatTime = seconds => {
+export const formatTime = (seconds: number): string => {
   const mins = Math.floor(seconds / 60)
   const secs = seconds % 60
   return `${mins}:${secs.toString().padStart(2, '0')}`

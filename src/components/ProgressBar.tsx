@@ -1,7 +1,11 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 
-const ProgressBar = ({ current, total }) => {
+interface ProgressBarProps {
+  current: number
+  total: number
+}
+
+const ProgressBar: React.FC<ProgressBarProps> = ({ current, total }) => {
   const percentage = (current / total) * 100
 
   return (
@@ -13,16 +17,9 @@ const ProgressBar = ({ current, total }) => {
         aria-valuenow={percentage}
         aria-valuemin={0}
         aria-valuemax={100}
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-green-600 animate-pulse" />
-      </div>
+      />
     </div>
   )
-}
-
-ProgressBar.propTypes = {
-  current: PropTypes.number.isRequired,
-  total: PropTypes.number.isRequired,
 }
 
 export default ProgressBar

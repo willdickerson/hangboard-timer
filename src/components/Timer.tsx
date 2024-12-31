@@ -1,25 +1,25 @@
-import React from 'react'
-import { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Play, Pause, RotateCcw, Volume2, VolumeX, Info } from 'lucide-react'
 import NoSleep from 'nosleep.js'
 
 import WorkoutPreview from './WorkoutPreview'
 import ProgressBar from './ProgressBar'
 import { WORKOUT_STEPS, sounds, formatTime } from '../constants/workout'
+import type { SoundType } from '../types/workout'
 
 const noSleep = new NoSleep()
 
-const Timer = () => {
-  const [currentStepIndex, setCurrentStepIndex] = useState(-1)
-  const [timeLeft, setTimeLeft] = useState(15)
-  const [isPaused, setIsPaused] = useState(false)
-  const [isPreviewExpanded, setIsPreviewExpanded] = useState(false)
-  const [isStarted, setIsStarted] = useState(false)
-  const [isMuted, setIsMuted] = useState(false)
-  const [showInfo, setShowInfo] = useState(false)
-  const [isAudioUnlocked, setIsAudioUnlocked] = useState(false)
+const Timer: React.FC = () => {
+  const [currentStepIndex, setCurrentStepIndex] = useState<number>(-1)
+  const [timeLeft, setTimeLeft] = useState<number>(15)
+  const [isPaused, setIsPaused] = useState<boolean>(false)
+  const [isPreviewExpanded, setIsPreviewExpanded] = useState<boolean>(false)
+  const [isStarted, setIsStarted] = useState<boolean>(false)
+  const [isMuted, setIsMuted] = useState<boolean>(false)
+  const [showInfo, setShowInfo] = useState<boolean>(false)
+  const [isAudioUnlocked, setIsAudioUnlocked] = useState<boolean>(false)
 
-  const unlockAudio = useCallback(async () => {
+  const unlockAudio = useCallback(async (): Promise<void> => {
     for (const audio of Object.values(sounds)) {
       audio.muted = true
       try {
@@ -37,10 +37,10 @@ const Timer = () => {
   }, [])
 
   const playSound = useCallback(
-    type => {
+    (type: SoundType) => {
       if (!isMuted && sounds[type]) {
         sounds[type].currentTime = 0
-        sounds[type].play().catch(error => {
+        sounds[type].play().catch((error: Error) => {
           console.log('Error playing sound:', error)
           if (!isAudioUnlocked) {
             unlockAudio()
@@ -65,15 +65,17 @@ const Timer = () => {
   }, [currentStepIndex, playSound])
 
   useEffect(() => {
-    let interval = null
+    let interval: number | null = null
 
     if (isStarted && currentStepIndex >= -1 && !isPaused && timeLeft > 0) {
-      interval = setInterval(() => {
+      interval = window.setInterval(() => {
         setTimeLeft(time => time - 1)
       }, 1000)
     }
 
-    return () => clearInterval(interval)
+    return () => {
+      if (interval) window.clearInterval(interval)
+    }
   }, [currentStepIndex, isPaused, timeLeft, isStarted])
 
   useEffect(() => {
@@ -113,13 +115,13 @@ const Timer = () => {
     setIsPaused(prev => !prev)
   }, [])
 
-  const getCurrentStepName = useCallback(() => {
+  const getCurrentStepName = useCallback((): string => {
     if (currentStepIndex === -1) return 'Get Ready!'
     if (currentStepIndex === -2) return 'Workout Complete!'
     return WORKOUT_STEPS[currentStepIndex].name
   }, [currentStepIndex])
 
-  const getNextStepName = useCallback(() => {
+  const getNextStepName = useCallback((): string => {
     if (currentStepIndex === -1) return WORKOUT_STEPS[0].name
     if (currentStepIndex >= WORKOUT_STEPS.length - 1) return ''
     return WORKOUT_STEPS[currentStepIndex + 1].name

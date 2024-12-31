@@ -1,14 +1,19 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { ChevronDown, ChevronUp } from 'lucide-react'
+import type { WorkoutPreviewProps } from '../types/workout'
 
-const formatTime = seconds => {
+const formatTime = (seconds: number): string => {
   const mins = Math.floor(seconds / 60)
   const secs = seconds % 60
   return `${mins}:${secs.toString().padStart(2, '0')}`
 }
 
-const WorkoutPreview = ({ steps, currentStep, isExpanded, onToggle }) => {
+const WorkoutPreview: React.FC<WorkoutPreviewProps> = ({
+  steps,
+  currentStep,
+  isExpanded,
+  onToggle,
+}) => {
   return (
     <div className="w-full bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden border border-gray-700">
       <button
@@ -41,19 +46,6 @@ const WorkoutPreview = ({ steps, currentStep, isExpanded, onToggle }) => {
       )}
     </div>
   )
-}
-
-WorkoutPreview.propTypes = {
-  steps: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      duration: PropTypes.number.isRequired,
-      sound: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  currentStep: PropTypes.number.isRequired,
-  isExpanded: PropTypes.bool.isRequired,
-  onToggle: PropTypes.func.isRequired,
 }
 
 export default WorkoutPreview
