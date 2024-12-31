@@ -34,20 +34,25 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
   const [isAudioUnlocked, setIsAudioUnlocked] = useState<boolean>(false)
 
   const unlockAudio = useCallback(async (): Promise<void> => {
-    for (const audio of Object.values(sounds)) {
-      audio.muted = true
-      try {
-        await audio.play()
-        audio.pause()
-        audio.currentTime = 0
-      } catch (error) {
-        console.log('Error unlocking audio:', error)
-      }
+    try {
+      const playPromises = Object.values(sounds).map(async audio => {
+        audio.muted = true
+        try {
+          await audio.play()
+          await audio.pause()
+          audio.currentTime = 0
+        } catch (error) {
+          console.log('Error unlocking audio:', error)
+        }
+      })
+      await Promise.all(playPromises)
+      Object.values(sounds).forEach(audio => {
+        audio.muted = false
+      })
+      setIsAudioUnlocked(true)
+    } catch (error) {
+      console.error('Error in unlockAudio:', error)
     }
-    for (const audio of Object.values(sounds)) {
-      audio.muted = false
-    }
-    setIsAudioUnlocked(true)
   }, [])
 
   const playSound = useCallback(
