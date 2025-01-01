@@ -4,7 +4,7 @@
 
 A simple hangboard workout timer built with **React** and **Vite**. This app uses **Tailwind CSS** for styling.
 
-![Hangboard Timer Demo](./docs/hangboard-timer-demo.gif)
+![Hangboard Timer Screenshot](./docs/hangboard-timer.png)
 
 **Live App:** [Hangboard Timer](https://www.hangboard.net/)
 
