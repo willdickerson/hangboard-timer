@@ -8,12 +8,18 @@ import {
   Info,
   Sun,
   Moon,
+  Settings,
 } from 'lucide-react'
 import NoSleep from 'nosleep.js'
 
 import WorkoutPreview from './WorkoutPreview'
 import ProgressBar from './ProgressBar'
-import { WORKOUT_STEPS, sounds, formatTime } from '../constants/workout'
+import {
+  DAVE_MACLEOD_WORKOUT,
+  EMIL_ABRAHAMSSON_WORKOUT,
+  sounds,
+  formatTime,
+} from '../constants/workout'
 import type { SoundType } from '../types/workout'
 
 const noSleep = new NoSleep()
@@ -21,6 +27,23 @@ const noSleep = new NoSleep()
 interface TimerProps {
   isDark: boolean
   onThemeToggle: () => void
+}
+
+const WORKOUTS = {
+  daveMacleod: {
+    steps: DAVE_MACLEOD_WORKOUT,
+    attribution: {
+      name: "Dave MacLeod's",
+      url: 'https://www.youtube.com/watch?v=PebF3NyEGPc',
+    },
+  },
+  emilAbrahamsson: {
+    steps: EMIL_ABRAHAMSSON_WORKOUT,
+    attribution: {
+      name: "Emil Abrahamsson's",
+      url: 'https://www.youtube.com/watch?v=3FNZdixeuZw',
+    },
+  },
 }
 
 const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
@@ -31,7 +54,13 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
   const [isStarted, setIsStarted] = useState<boolean>(false)
   const [isMuted, setIsMuted] = useState<boolean>(false)
   const [showInfo, setShowInfo] = useState<boolean>(false)
+  const [showSettings, setShowSettings] = useState<boolean>(false)
   const [isAudioUnlocked, setIsAudioUnlocked] = useState<boolean>(false)
+  const [selectedWorkout, setSelectedWorkout] = useState<
+    'daveMacleod' | 'emilAbrahamsson'
+  >('daveMacleod')
+
+  const currentWorkout = WORKOUTS[selectedWorkout]
 
   const unlockAudio = useCallback(async (): Promise<void> => {
     try {
@@ -72,7 +101,7 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
 
   const nextStep = useCallback(() => {
     const nextStepIndex = currentStepIndex + 1
-    if (nextStepIndex >= WORKOUT_STEPS.length) {
+    if (nextStepIndex >= currentWorkout.steps.length) {
       setCurrentStepIndex(-2) // Set to complete state
       setIsStarted(false)
       playSound('rest')
@@ -80,26 +109,26 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
     }
 
     setCurrentStepIndex(nextStepIndex)
-    setTimeLeft(WORKOUT_STEPS[nextStepIndex].duration)
-    playSound(WORKOUT_STEPS[nextStepIndex].sound)
-  }, [currentStepIndex, playSound])
+    setTimeLeft(currentWorkout.steps[nextStepIndex].duration)
+    playSound(currentWorkout.steps[nextStepIndex].sound)
+  }, [currentStepIndex, currentWorkout.steps, playSound])
 
   const getNextStepName = useCallback((): string => {
     if (currentStepIndex === -1) {
-      return WORKOUT_STEPS[0]?.name || ''
+      return currentWorkout.steps[0]?.name || ''
     }
     const nextIndex = currentStepIndex + 1
-    if (nextIndex >= WORKOUT_STEPS.length) {
+    if (nextIndex >= currentWorkout.steps.length) {
       return ''
     }
-    return WORKOUT_STEPS[nextIndex]?.name || ''
-  }, [currentStepIndex])
+    return currentWorkout.steps[nextIndex]?.name || ''
+  }, [currentStepIndex, currentWorkout.steps])
 
   const getCurrentStepName = useCallback((): string => {
     if (currentStepIndex === -1) return 'Get Ready!'
     if (currentStepIndex === -2) return 'Workout Complete!'
-    return WORKOUT_STEPS[currentStepIndex]?.name || 'Unknown Step'
-  }, [currentStepIndex])
+    return currentWorkout.steps[currentStepIndex]?.name || 'Unknown Step'
+  }, [currentStepIndex, currentWorkout.steps])
 
   useEffect(() => {
     let interval: number | null = null
@@ -126,16 +155,23 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
   useEffect(() => {
     if (isStarted && timeLeft === 0) {
       if (currentStepIndex === -1) {
-        if (WORKOUT_STEPS.length > 0) {
+        if (currentWorkout.steps.length > 0) {
           setCurrentStepIndex(0)
-          setTimeLeft(WORKOUT_STEPS[0].duration)
-          playSound(WORKOUT_STEPS[0].sound)
+          setTimeLeft(currentWorkout.steps[0].duration)
+          playSound(currentWorkout.steps[0].sound)
         }
       } else {
         nextStep()
       }
     }
-  }, [timeLeft, isStarted, currentStepIndex, nextStep, playSound])
+  }, [
+    timeLeft,
+    isStarted,
+    currentStepIndex,
+    nextStep,
+    playSound,
+    currentWorkout.steps,
+  ])
 
   const startTimer = useCallback(async () => {
     if (currentStepIndex === -1) {
@@ -161,6 +197,13 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
     setIsPaused(prev => !prev)
   }, [])
 
+  const handleWorkoutChange = (workout: 'daveMacleod' | 'emilAbrahamsson') => {
+    if (isStarted) {
+      resetTimer()
+    }
+    setSelectedWorkout(workout)
+  }
+
   return (
     <div className="w-full max-w-md space-y-4 py-2">
       <div className="flex justify-end space-x-2">
@@ -185,6 +228,16 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
         </button>
 
         <button
+          onClick={() => setShowSettings(!showSettings)}
+          className={`p-2 rounded-lg ${
+            isDark ? 'hover:bg-gray-700/50' : 'hover:bg-gray-100'
+          } transition-colors`}
+          aria-label="Toggle Settings"
+        >
+          <Settings size={20} />
+        </button>
+
+        <button
           onClick={() => setShowInfo(!showInfo)}
           className={`p-2 rounded-lg ${
             isDark ? 'hover:bg-gray-700/50' : 'hover:bg-gray-100'
@@ -194,6 +247,59 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
           <Info size={20} />
         </button>
       </div>
+
+      {showSettings && (
+        <div
+          className={`${
+            isDark ? 'bg-gray-800/50' : 'bg-white'
+          } p-4 rounded-xl border ${
+            isDark ? 'border-gray-700' : 'border-gray-200'
+          } text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}
+        >
+          <h3
+            className={`font-medium ${
+              isDark ? 'text-white' : 'text-gray-600'
+            } mb-4`}
+          >
+            Workout Selection
+          </h3>
+          <div className="space-y-3">
+            <button
+              onClick={() => handleWorkoutChange('daveMacleod')}
+              className={`w-full p-3 text-left rounded-lg border transition-all duration-200 
+                ${
+                  selectedWorkout === 'daveMacleod'
+                    ? 'border-green-500/50 bg-green-500/10 text-green-500'
+                    : `${
+                        isDark
+                          ? 'border-gray-700/50 hover:bg-gray-700/20 text-gray-300 border-transparent'
+                          : 'border-gray-200 hover:bg-gray-50 text-gray-600 border-transparent'
+                      }`
+                }`}
+            >
+              <span className="font-medium">Dave MacLeod&apos;s Workout</span>
+            </button>
+
+            <button
+              onClick={() => handleWorkoutChange('emilAbrahamsson')}
+              className={`w-full p-3 text-left rounded-lg border transition-all duration-200 
+                ${
+                  selectedWorkout === 'emilAbrahamsson'
+                    ? 'border-green-500/50 bg-green-500/10 text-green-500'
+                    : `${
+                        isDark
+                          ? 'border-gray-700/50 hover:bg-gray-700/20 text-gray-300 border-transparent'
+                          : 'border-gray-200 hover:bg-gray-50 text-gray-600 border-transparent'
+                      }`
+                }`}
+            >
+              <span className="font-medium">
+                Emil Abrahamsson&apos;s Workout
+              </span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {showInfo && (
         <div
@@ -211,7 +317,7 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
             About this workout
           </h3>
           <p>
-            This hangboard workout is designed for intermediate climbers to
+            These hangboard workouts are designed for intermediate climbers to
             improve finger strength and endurance. Always warm up properly and
             listen to your body. Stop if you experience any pain.
           </p>
@@ -219,7 +325,7 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
       )}
 
       <WorkoutPreview
-        steps={WORKOUT_STEPS}
+        steps={currentWorkout.steps}
         currentStep={currentStepIndex}
         isExpanded={isPreviewExpanded}
         onToggle={() => setIsPreviewExpanded(!isPreviewExpanded)}
@@ -250,10 +356,9 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
             Next: {getNextStepName()}
           </div>
         )}
-
         <ProgressBar
           current={currentStepIndex + 1}
-          total={WORKOUT_STEPS.length}
+          total={currentWorkout.steps.length}
           isDark={isDark}
         />
 
@@ -296,9 +401,9 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
 
       <div className={isDark ? 'text-gray-400' : 'text-gray-500'}>
         <p className="text-sm text-center">
-          Workout adapted from Dave MacLeod&apos;s{' '}
+          Workout adapted from {currentWorkout.attribution.name}{' '}
           <a
-            href="https://www.youtube.com/watch?v=PebF3NyEGPc"
+            href={currentWorkout.attribution.url}
             className="text-green-400 hover:text-green-300 underline transition-colors"
             target="_blank"
             rel="noopener noreferrer"

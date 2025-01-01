@@ -2,7 +2,7 @@ import React from 'react'
 import { render, screen, fireEvent, act } from '@testing-library/react'
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import Timer from '../Timer'
-import { WORKOUT_STEPS } from '../../constants/workout'
+import { DAVE_MACLEOD_WORKOUT } from '../../constants/workout'
 import { sounds } from '../../constants/workout'
 
 // Mock NoSleep.js
@@ -53,9 +53,11 @@ describe('Timer', () => {
       expect(screen.getByText(/Warm-up: Hang on Jug/i)).toBeInTheDocument()
 
       // Advance through each workout step
-      for (let i = 0; i < WORKOUT_STEPS.length; i++) {
+      for (let i = 0; i < DAVE_MACLEOD_WORKOUT.length; i++) {
         await act(async () => {
-          await vi.advanceTimersByTimeAsync(WORKOUT_STEPS[i].duration * 1000)
+          await vi.advanceTimersByTimeAsync(
+            DAVE_MACLEOD_WORKOUT[i].duration * 1000
+          )
           await vi.runOnlyPendingTimersAsync()
         })
       }
@@ -218,6 +220,52 @@ describe('Timer', () => {
         )
         expect(screen.getByText(/About this workout/)).toHaveClass('text-white')
       })
+    })
+  })
+
+  // Timer Settings Functionality
+  describe('Timer Settings Functionality', () => {
+    const mockThemeToggle = vi.fn()
+
+    it('opens and closes settings panel', () => {
+      render(<Timer isDark={false} onThemeToggle={mockThemeToggle} />)
+
+      // Settings panel should not be visible initially
+      expect(screen.queryByText('Workout Selection')).not.toBeInTheDocument()
+
+      // Open settings panel
+      fireEvent.click(screen.getByLabelText('Toggle Settings'))
+      expect(screen.getByText('Workout Selection')).toBeInTheDocument()
+
+      // Close settings panel
+      fireEvent.click(screen.getByLabelText('Toggle Settings'))
+      expect(screen.queryByText('Workout Selection')).not.toBeInTheDocument()
+    })
+
+    it('allows the user to toggle settings and select a workout', () => {
+      render(<Timer isDark={false} onThemeToggle={mockThemeToggle} />)
+
+      // Open settings panel
+      fireEvent.click(screen.getByLabelText('Toggle Settings'))
+      expect(screen.getByText('Workout Selection')).toBeInTheDocument()
+
+      // Select Dave MacLeod's workout
+      const daveWorkoutButton = screen
+        .getByText("Dave MacLeod's Workout")
+        .closest('button')
+      fireEvent.click(daveWorkoutButton!)
+      expect(daveWorkoutButton).toHaveClass(
+        'border-green-500/50 bg-green-500/10 text-green-500'
+      )
+
+      // Select Emil Abrahamsson's workout
+      const emilWorkoutButton = screen
+        .getByText("Emil Abrahamsson's Workout")
+        .closest('button')
+      fireEvent.click(emilWorkoutButton!)
+      expect(emilWorkoutButton).toHaveClass(
+        'border-green-500/50 bg-green-500/10 text-green-500'
+      )
     })
   })
 })
