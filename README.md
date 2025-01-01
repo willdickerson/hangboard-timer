@@ -1,5 +1,7 @@
 # Hangboard Timer
 
+[![codecov](https://codecov.io/gh/willdickerson/hangboard-timer/branch/main/graph/badge.svg)](https://codecov.io/gh/willdickerson/hangboard-timer)
+
 A simple hangboard workout timer built with **React** and **Vite**. This app uses **Tailwind CSS** for styling.
 
 ![Hangboard Timer Screenshot](./docs/hangboard-timer.png)
