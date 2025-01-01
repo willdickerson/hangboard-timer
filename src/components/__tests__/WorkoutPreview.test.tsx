@@ -17,6 +17,7 @@ describe('WorkoutPreview', () => {
         currentStep={0}
         isExpanded={true}
         onToggle={vi.fn()}
+        isDark={false}
       />
     )
     expect(screen.getByText('Step 1')).toBeInTheDocument()
@@ -30,6 +31,7 @@ describe('WorkoutPreview', () => {
         currentStep={0}
         isExpanded={false}
         onToggle={vi.fn()}
+        isDark={false}
       />
     )
     expect(screen.queryByText('Step 1')).not.toBeInTheDocument()
@@ -44,6 +46,7 @@ describe('WorkoutPreview', () => {
         currentStep={0}
         isExpanded={false}
         onToggle={onToggleMock}
+        isDark={false}
       />
     )
     fireEvent.click(screen.getByRole('button', { name: /Workout Overview/i }))

@@ -42,7 +42,7 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
           await audio.pause()
           audio.currentTime = 0
         } catch (error) {
-          console.log('Error unlocking audio:', error)
+          console.error('Error in unlockAudio:', error)
         }
       })
       await Promise.all(playPromises)
@@ -71,38 +71,66 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
   )
 
   const nextStep = useCallback(() => {
-    if (currentStepIndex + 1 < WORKOUT_STEPS.length) {
-      const nextStepIndex = currentStepIndex + 1
-      setCurrentStepIndex(nextStepIndex)
-      setTimeLeft(WORKOUT_STEPS[nextStepIndex].duration)
-      playSound(WORKOUT_STEPS[nextStepIndex].sound)
-    } else {
-      setCurrentStepIndex(-2)
+    const nextStepIndex = currentStepIndex + 1
+    if (nextStepIndex >= WORKOUT_STEPS.length) {
+      setCurrentStepIndex(-2) // Set to complete state
       setIsStarted(false)
       playSound('rest')
+      return
     }
+
+    setCurrentStepIndex(nextStepIndex)
+    setTimeLeft(WORKOUT_STEPS[nextStepIndex].duration)
+    playSound(WORKOUT_STEPS[nextStepIndex].sound)
   }, [currentStepIndex, playSound])
+
+  const getNextStepName = useCallback((): string => {
+    if (currentStepIndex === -1) {
+      return WORKOUT_STEPS[0]?.name || ''
+    }
+    const nextIndex = currentStepIndex + 1
+    if (nextIndex >= WORKOUT_STEPS.length) {
+      return ''
+    }
+    return WORKOUT_STEPS[nextIndex]?.name || ''
+  }, [currentStepIndex])
+
+  const getCurrentStepName = useCallback((): string => {
+    if (currentStepIndex === -1) return 'Get Ready!'
+    if (currentStepIndex === -2) return 'Workout Complete!'
+    return WORKOUT_STEPS[currentStepIndex]?.name || 'Unknown Step'
+  }, [currentStepIndex])
 
   useEffect(() => {
     let interval: number | null = null
 
-    if (isStarted && currentStepIndex >= -1 && !isPaused && timeLeft > 0) {
+    if (isStarted && currentStepIndex >= -1 && !isPaused) {
       interval = window.setInterval(() => {
-        setTimeLeft(time => time - 1)
+        setTimeLeft(prevTime => {
+          if (prevTime <= 0) {
+            if (interval) clearInterval(interval)
+            return 0
+          }
+          return prevTime - 1
+        })
       }, 1000)
     }
 
     return () => {
-      if (interval) window.clearInterval(interval)
+      if (interval) {
+        clearInterval(interval)
+      }
     }
-  }, [currentStepIndex, isPaused, timeLeft, isStarted])
+  }, [isStarted, currentStepIndex, isPaused])
 
   useEffect(() => {
     if (isStarted && timeLeft === 0) {
       if (currentStepIndex === -1) {
-        setCurrentStepIndex(0)
-        setTimeLeft(WORKOUT_STEPS[0].duration)
-        playSound(WORKOUT_STEPS[0].sound)
+        if (WORKOUT_STEPS.length > 0) {
+          setCurrentStepIndex(0)
+          setTimeLeft(WORKOUT_STEPS[0].duration)
+          playSound(WORKOUT_STEPS[0].sound)
+        }
       } else {
         nextStep()
       }
@@ -114,11 +142,9 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
       if (!isAudioUnlocked) {
         await unlockAudio()
       }
-
       noSleep.enable()
       setIsStarted(true)
       setTimeLeft(15)
-      setCurrentStepIndex(-1)
       playSound('begin')
     }
   }, [currentStepIndex, isAudioUnlocked, unlockAudio, playSound])
@@ -134,18 +160,6 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
   const togglePause = useCallback(() => {
     setIsPaused(prev => !prev)
   }, [])
-
-  const getCurrentStepName = useCallback((): string => {
-    if (currentStepIndex === -1) return 'Get Ready!'
-    if (currentStepIndex === -2) return 'Workout Complete!'
-    return WORKOUT_STEPS[currentStepIndex].name
-  }, [currentStepIndex])
-
-  const getNextStepName = useCallback((): string => {
-    if (currentStepIndex === -1) return WORKOUT_STEPS[0].name
-    if (currentStepIndex >= WORKOUT_STEPS.length - 1) return ''
-    return WORKOUT_STEPS[currentStepIndex + 1].name
-  }, [currentStepIndex])
 
   return (
     <div className="w-full max-w-md space-y-4 py-2">

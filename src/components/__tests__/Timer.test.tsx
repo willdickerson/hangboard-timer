@@ -1,61 +1,223 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
-import { describe, it, expect, beforeEach } from 'vitest'
+import { render, screen, fireEvent, act } from '@testing-library/react'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import Timer from '../Timer'
+import { WORKOUT_STEPS } from '../../constants/workout'
+import { sounds } from '../../constants/workout'
+
+// Mock NoSleep.js
+vi.mock('nosleep.js', () => {
+  return {
+    default: vi.fn().mockImplementation(() => ({
+      enable: vi.fn(),
+      disable: vi.fn(),
+    })),
+  }
+})
 
 describe('Timer', () => {
+  const mockThemeToggle = vi.fn()
+
   beforeEach(() => {
-    render(<Timer />)
+    vi.useFakeTimers()
+    vi.clearAllTimers()
+    vi.clearAllMocks()
+
+    // Setup sound mocks
+    Object.values(sounds).forEach(sound => {
+      sound.play = vi.fn().mockResolvedValue(undefined)
+      sound.pause = vi.fn()
+      sound.currentTime = 0
+      sound.muted = false
+    })
   })
 
-  it('renders initial state with "Get Ready!"', () => {
-    expect(screen.getByText('Get Ready!')).toBeInTheDocument()
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
-  it('starts timer on "Start Workout" button click', () => {
-    fireEvent.click(screen.getByLabelText(/Start Workout/i))
-    expect(screen.getByText(/Get Ready!/i)).toBeInTheDocument()
+  // Core Timer Functionality
+  describe('Workout Flow', () => {
+    it('advances through all steps and shows "Workout Complete!"', async () => {
+      render(<Timer isDark={false} onThemeToggle={vi.fn()} />)
+
+      await act(async () => {
+        fireEvent.click(screen.getByLabelText(/Start Workout/i))
+      })
+
+      // Advance through "Get Ready" phase
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(15000)
+      })
+
+      expect(screen.getByText(/Warm-up: Hang on Jug/i)).toBeInTheDocument()
+
+      // Advance through each workout step
+      for (let i = 0; i < WORKOUT_STEPS.length; i++) {
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(WORKOUT_STEPS[i].duration * 1000)
+          await vi.runOnlyPendingTimersAsync()
+        })
+      }
+
+      const heading = screen.getByRole('heading', { level: 1 })
+      expect(heading).toHaveTextContent('Workout Complete!')
+    })
+
+    describe('Workout Controls', () => {
+      it('handles pause and resume functionality', async () => {
+        render(<Timer isDark={false} onThemeToggle={mockThemeToggle} />)
+
+        // Start and initial state
+        await act(async () => {
+          fireEvent.click(screen.getByLabelText('Start Workout'))
+        })
+        expect(screen.getByText('0:15')).toBeInTheDocument()
+
+        // Advance and check time
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(5000)
+        })
+        expect(screen.getByText('0:10')).toBeInTheDocument()
+
+        // Test pause
+        fireEvent.click(screen.getByLabelText('Pause Workout'))
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(5000)
+        })
+        expect(screen.getByText('0:10')).toBeInTheDocument()
+
+        // Test resume
+        fireEvent.click(screen.getByLabelText('Resume Workout'))
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(5000)
+        })
+        expect(screen.getByText('0:05')).toBeInTheDocument()
+      })
+
+      it('handles reset functionality', async () => {
+        render(<Timer isDark={false} onThemeToggle={mockThemeToggle} />)
+
+        await act(async () => {
+          fireEvent.click(screen.getByLabelText('Start Workout'))
+        })
+
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(5000)
+        })
+
+        fireEvent.click(screen.getByLabelText('Reset Workout'))
+
+        expect(screen.getByText('0:15')).toBeInTheDocument()
+        expect(screen.getByText('Get Ready!')).toBeInTheDocument()
+        expect(screen.getByLabelText('Start Workout')).toBeInTheDocument()
+      })
+    })
   })
 
-  it('pauses and resumes timer', async () => {
-    // Start the timer
-    fireEvent.click(screen.getByLabelText(/Start Workout/i))
+  // Audio Functionality
+  describe('Audio Features', () => {
+    it('toggles mute state when mute button is clicked', () => {
+      render(<Timer isDark={false} onThemeToggle={mockThemeToggle} />)
 
-    // Wait for the Pause button to appear
-    const pauseButton =
-      await screen.findByLabelText<HTMLButtonElement>(/Pause Workout/i)
-    fireEvent.click(pauseButton)
+      expect(screen.getByLabelText('Mute')).toBeInTheDocument()
 
-    // Check if Resume button appears
-    expect(screen.getByLabelText(/Resume Workout/i)).toBeInTheDocument()
+      fireEvent.click(screen.getByLabelText('Mute'))
+      expect(screen.getByLabelText('Unmute')).toBeInTheDocument()
 
-    // Resume the timer
-    fireEvent.click(screen.getByLabelText(/Resume Workout/i))
+      fireEvent.click(screen.getByLabelText('Unmute'))
+      expect(screen.getByLabelText('Mute')).toBeInTheDocument()
+    })
 
-    // Check if Pause button appears again
-    expect(screen.getByLabelText(/Pause Workout/i)).toBeInTheDocument()
+    it('unlocks audio when starting workout', async () => {
+      render(<Timer isDark={false} onThemeToggle={mockThemeToggle} />)
+
+      await act(async () => {
+        fireEvent.click(screen.getByLabelText('Start Workout'))
+      })
+
+      Object.values(sounds).forEach(sound => {
+        expect(sound.play).toHaveBeenCalled()
+      })
+    })
   })
 
-  it('resets timer', async () => {
-    // Start the timer
-    fireEvent.click(screen.getByLabelText(/Start Workout/i))
+  // UI and Theming
+  describe('User Interface', () => {
+    describe('Theme Functionality', () => {
+      it('calls theme toggle callback when theme button is clicked', () => {
+        render(<Timer isDark={false} onThemeToggle={mockThemeToggle} />)
 
-    // Wait for the Reset button to appear
-    const resetButton =
-      await screen.findByLabelText<HTMLButtonElement>(/Reset Workout/i)
-    fireEvent.click(resetButton)
+        fireEvent.click(screen.getByLabelText('Switch to dark mode'))
+        expect(mockThemeToggle).toHaveBeenCalledTimes(1)
+      })
 
-    // Ensure timer is reset to initial state
-    expect(screen.getByText('Get Ready!')).toBeInTheDocument()
-  })
+      it('renders with correct theme classes', () => {
+        const { rerender } = render(
+          <Timer isDark={false} onThemeToggle={mockThemeToggle} />
+        )
 
-  it('mutes and unmutes sound', () => {
-    // Mute sound
-    fireEvent.click(screen.getByLabelText(/Mute/i))
-    expect(screen.getByLabelText(/Unmute/i)).toBeInTheDocument()
+        // Light theme
+        expect(screen.getByText('Get Ready!')).toHaveClass(
+          'bg-clip-text',
+          'text-transparent'
+        )
+        expect(screen.getByRole('progressbar').parentElement).toHaveClass(
+          'bg-gray-300/50'
+        )
 
-    // Unmute sound
-    fireEvent.click(screen.getByLabelText(/Unmute/i))
-    expect(screen.getByLabelText(/Mute/i)).toBeInTheDocument()
+        // Dark theme
+        rerender(<Timer isDark={true} onThemeToggle={mockThemeToggle} />)
+        expect(screen.getByText('Get Ready!')).toHaveClass(
+          'bg-clip-text',
+          'text-transparent'
+        )
+        expect(screen.getByRole('progressbar').parentElement).toHaveClass(
+          'bg-gray-700/50'
+        )
+      })
+    })
+
+    describe('Information Panel', () => {
+      it('toggles workout information when info button is clicked', () => {
+        render(<Timer isDark={false} onThemeToggle={mockThemeToggle} />)
+
+        expect(screen.queryByText(/About this workout/)).not.toBeInTheDocument()
+
+        fireEvent.click(screen.getByLabelText('Toggle Information'))
+        expect(screen.getByText(/About this workout/)).toBeInTheDocument()
+
+        const infoContainer = screen
+          .getByText(/About this workout/)
+          .closest('div')
+        expect(infoContainer).toHaveClass(
+          'bg-white',
+          'border-gray-200',
+          'text-gray-600'
+        )
+        expect(screen.getByText(/About this workout/)).toHaveClass(
+          'text-gray-600'
+        )
+
+        fireEvent.click(screen.getByLabelText('Toggle Information'))
+        expect(screen.queryByText(/About this workout/)).not.toBeInTheDocument()
+      })
+
+      it('displays info panel with correct dark theme classes', () => {
+        render(<Timer isDark={true} onThemeToggle={mockThemeToggle} />)
+
+        fireEvent.click(screen.getByLabelText('Toggle Information'))
+
+        const infoContainer = screen
+          .getByText(/About this workout/)
+          .closest('div')
+        expect(infoContainer).toHaveClass(
+          'bg-gray-800/50',
+          'border-gray-700',
+          'text-gray-300'
+        )
+        expect(screen.getByText(/About this workout/)).toHaveClass('text-white')
+      })
+    })
   })
 })
