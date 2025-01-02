@@ -343,17 +343,18 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
             </button>
           ) : (
             <>
-              <button
-                onClick={togglePause}
-                className={`px-6 py-3 rounded-xl flex items-center gap-2 font-medium transition-all duration-300 
-                  ${isPaused ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-amber-600 hover:bg-amber-700'} 
-                  text-white`}
-                disabled={currentStepIndex === -2}
-                aria-label={isPaused ? 'Resume Workout' : 'Pause Workout'}
-              >
-                {isPaused ? <Play size={20} /> : <Pause size={20} />}
-                {isPaused ? 'Resume' : 'Pause'}
-              </button>
+              {currentStepIndex !== -2 && (
+                <button
+                  onClick={togglePause}
+                  className={`px-6 py-3 rounded-xl flex items-center gap-2 font-medium transition-all duration-300 
+                    ${isPaused ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-amber-600 hover:bg-amber-700'} 
+                    text-white`}
+                  aria-label={isPaused ? 'Resume Workout' : 'Pause Workout'}
+                >
+                  {isPaused ? <Play size={20} /> : <Pause size={20} />}
+                  {isPaused ? 'Resume' : 'Pause'}
+                </button>
+              )}
               <button
                 onClick={resetTimer}
                 className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl flex items-center gap-2 

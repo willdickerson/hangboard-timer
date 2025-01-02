@@ -38,7 +38,7 @@ describe('Timer', () => {
 
   // Core Timer Functionality
   describe('Workout Flow', () => {
-    it('advances through all steps and shows "Workout Complete!"', async () => {
+    it('advances through all steps, shows "Workout Complete!" and hides pause button', async () => {
       render(<Timer isDark={false} onThemeToggle={vi.fn()} />)
 
       await act(async () => {
@@ -51,6 +51,7 @@ describe('Timer', () => {
       })
 
       expect(screen.getByText(/Warm-up: Hang on Jug/i)).toBeInTheDocument()
+      expect(screen.getByLabelText('Pause Workout')).toBeInTheDocument()
 
       // Advance through each workout step
       for (let i = 0; i < DAVE_MACLEOD_WORKOUT.length; i++) {
@@ -64,6 +65,13 @@ describe('Timer', () => {
 
       const heading = screen.getByRole('heading', { level: 1 })
       expect(heading).toHaveTextContent('Workout Complete!')
+
+      // Verify pause button is no longer visible
+      expect(screen.queryByLabelText('Pause Workout')).not.toBeInTheDocument()
+      expect(screen.queryByLabelText('Resume Workout')).not.toBeInTheDocument()
+
+      // Reset button should still be visible
+      expect(screen.getByLabelText('Reset Workout')).toBeInTheDocument()
     })
 
     describe('Workout Controls', () => {
