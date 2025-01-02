@@ -5,7 +5,6 @@ import {
   RotateCcw,
   Volume2,
   VolumeX,
-  Info,
   Sun,
   Moon,
   Settings,
@@ -53,7 +52,6 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
   const [isPreviewExpanded, setIsPreviewExpanded] = useState<boolean>(false)
   const [isStarted, setIsStarted] = useState<boolean>(false)
   const [isMuted, setIsMuted] = useState<boolean>(false)
-  const [showInfo, setShowInfo] = useState<boolean>(false)
   const [showSettings, setShowSettings] = useState<boolean>(false)
   const [isAudioUnlocked, setIsAudioUnlocked] = useState<boolean>(false)
   const [selectedWorkout, setSelectedWorkout] = useState<
@@ -236,16 +234,6 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
         >
           <Settings size={20} />
         </button>
-
-        <button
-          onClick={() => setShowInfo(!showInfo)}
-          className={`p-2 rounded-lg ${
-            isDark ? 'hover:bg-gray-700/50' : 'hover:bg-gray-100'
-          } transition-colors`}
-          aria-label="Toggle Information"
-        >
-          <Info size={20} />
-        </button>
       </div>
 
       {showSettings && (
@@ -277,7 +265,7 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
                       }`
                 }`}
             >
-              <span className="font-medium">Dave MacLeod&apos;s Workout</span>
+              <span className="font-medium">Dave&apos;s 30m Routine</span>
             </button>
 
             <button
@@ -293,34 +281,9 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
                       }`
                 }`}
             >
-              <span className="font-medium">
-                Emil Abrahamsson&apos;s Workout
-              </span>
+              <span className="font-medium">Emil&apos;s 10m Routine</span>
             </button>
           </div>
-        </div>
-      )}
-
-      {showInfo && (
-        <div
-          className={`${
-            isDark ? 'bg-gray-800/50' : 'bg-white'
-          } p-4 rounded-xl border ${
-            isDark ? 'border-gray-700' : 'border-gray-200'
-          } text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}
-        >
-          <h3
-            className={`font-medium ${
-              isDark ? 'text-white' : 'text-gray-600'
-            } mb-2`}
-          >
-            About this workout
-          </h3>
-          <p>
-            These hangboard workouts are designed for intermediate climbers to
-            improve finger strength and endurance. Always warm up properly and
-            listen to your body. Stop if you experience any pain.
-          </p>
         </div>
       )}
 

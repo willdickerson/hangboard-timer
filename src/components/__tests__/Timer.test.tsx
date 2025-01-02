@@ -179,48 +179,6 @@ describe('Timer', () => {
         )
       })
     })
-
-    describe('Information Panel', () => {
-      it('toggles workout information when info button is clicked', () => {
-        render(<Timer isDark={false} onThemeToggle={mockThemeToggle} />)
-
-        expect(screen.queryByText(/About this workout/)).not.toBeInTheDocument()
-
-        fireEvent.click(screen.getByLabelText('Toggle Information'))
-        expect(screen.getByText(/About this workout/)).toBeInTheDocument()
-
-        const infoContainer = screen
-          .getByText(/About this workout/)
-          .closest('div')
-        expect(infoContainer).toHaveClass(
-          'bg-white',
-          'border-gray-200',
-          'text-gray-600'
-        )
-        expect(screen.getByText(/About this workout/)).toHaveClass(
-          'text-gray-600'
-        )
-
-        fireEvent.click(screen.getByLabelText('Toggle Information'))
-        expect(screen.queryByText(/About this workout/)).not.toBeInTheDocument()
-      })
-
-      it('displays info panel with correct dark theme classes', () => {
-        render(<Timer isDark={true} onThemeToggle={mockThemeToggle} />)
-
-        fireEvent.click(screen.getByLabelText('Toggle Information'))
-
-        const infoContainer = screen
-          .getByText(/About this workout/)
-          .closest('div')
-        expect(infoContainer).toHaveClass(
-          'bg-gray-800/50',
-          'border-gray-700',
-          'text-gray-300'
-        )
-        expect(screen.getByText(/About this workout/)).toHaveClass('text-white')
-      })
-    })
   })
 
   // Timer Settings Functionality
@@ -251,7 +209,7 @@ describe('Timer', () => {
 
       // Select Dave MacLeod's workout
       const daveWorkoutButton = screen
-        .getByText("Dave MacLeod's Workout")
+        .getByText("Dave's 30m Routine")
         .closest('button')
       fireEvent.click(daveWorkoutButton!)
       expect(daveWorkoutButton).toHaveClass(
@@ -260,7 +218,7 @@ describe('Timer', () => {
 
       // Select Emil Abrahamsson's workout
       const emilWorkoutButton = screen
-        .getByText("Emil Abrahamsson's Workout")
+        .getByText("Emil's 10m Routine")
         .closest('button')
       fireEvent.click(emilWorkoutButton!)
       expect(emilWorkoutButton).toHaveClass(
