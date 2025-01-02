@@ -6,7 +6,7 @@ A simple hangboard workout timer built with **React** and **Vite**. This app use
 
 ![Hangboard Timer Screenshot](./docs/hangboard-timer.png)
 
-**Live App:** [Hangboard Timer](https://www.hangboard.net/)
+**Try it here:** [Hangboard Timer](https://www.hangboard.net/)
 
 ## Features
 
