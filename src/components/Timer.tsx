@@ -5,7 +5,7 @@ import {
   RotateCcw,
   Volume2,
   VolumeX,
-  Settings,
+  Dumbbell,
 } from 'lucide-react'
 import NoSleep from 'nosleep.js'
 
@@ -234,7 +234,7 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
           aria-label="Toggle Settings"
         >
           <span className="relative z-10">
-            <Settings size={20} />
+            <Dumbbell size={20} />
           </span>
         </button>
       </div>
