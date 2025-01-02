@@ -38,7 +38,14 @@ const WorkoutPreview: React.FC<WorkoutPreviewProps> = ({
       </button>
 
       {isExpanded && (
-        <div id="workout-steps" className="p-4 max-h-96 overflow-y-auto">
+        <div
+          id="workout-steps"
+          className={`p-4 max-h-96 overflow-y-auto scrollbar-thin ${
+            isDark
+              ? 'scrollbar-thumb-gray-600 scrollbar-track-gray-800/50'
+              : 'scrollbar-thumb-gray-300 scrollbar-track-gray-100 scrollbar-track-transparent'
+          }`}
+        >
           {steps.map((step, index) => (
             <div
               key={index}
