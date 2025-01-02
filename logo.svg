@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="15" fill="#22c55e" stroke="#059669" stroke-width="2"/>
+  
+  <!-- Centered hangboard -->
+  <rect x="6" y="9.5" width="20" height="13" rx="1" fill="#f9fafb"/>
+  
+  <!-- Hanging lines (drawn on top of board edge) -->
+  <line x1="12" y1="10" x2="16" y2="5" stroke="#f9fafb" stroke-width="1"/>
+  <line x1="20" y1="10" x2="16" y2="5" stroke="#f9fafb" stroke-width="1"/>
+  <line x1="16" y1="5" x2="16" y2="2" stroke="#f9fafb" stroke-width="1"/>
+  
+  <!-- Large jug pocket on top -->
+  <rect x="8" y="11.5" width="16" height="3.5" rx="0.5" fill="#22c55e"/>
+  
+  <!-- Two wider finger pockets below -->
+  <rect x="8" y="17" width="7" height="3.5" rx="0.5" fill="#22c55e"/>
+  <rect x="17" y="17" width="7" height="3.5" rx="0.5" fill="#22c55e"/>
+</svg>
