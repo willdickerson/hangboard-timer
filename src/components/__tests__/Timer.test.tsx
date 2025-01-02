@@ -291,5 +291,43 @@ describe('Timer', () => {
         'border-transparent'
       )
     })
+
+    it('applies correct styles to settings button when settings are open/closed', () => {
+      render(<Timer isDark={false} onThemeToggle={mockThemeToggle} />)
+
+      const settingsButton = screen.getByLabelText('Toggle Settings')
+
+      // Initial state (closed)
+      expect(settingsButton).not.toHaveClass('bg-gray-100', 'text-green-500')
+      expect(settingsButton).toHaveClass('hover:bg-gray-100')
+
+      // Open settings
+      fireEvent.click(settingsButton)
+      expect(settingsButton).toHaveClass('bg-gray-100', 'text-green-500')
+
+      // Close settings
+      fireEvent.click(settingsButton)
+      expect(settingsButton).not.toHaveClass('bg-gray-100', 'text-green-500')
+      expect(settingsButton).toHaveClass('hover:bg-gray-100')
+    })
+
+    it('applies correct dark mode styles to settings button when settings are open/closed', () => {
+      render(<Timer isDark={true} onThemeToggle={mockThemeToggle} />)
+
+      const settingsButton = screen.getByLabelText('Toggle Settings')
+
+      // Initial state (closed)
+      expect(settingsButton).not.toHaveClass('bg-gray-700/50', 'text-green-400')
+      expect(settingsButton).toHaveClass('hover:bg-gray-700/50')
+
+      // Open settings
+      fireEvent.click(settingsButton)
+      expect(settingsButton).toHaveClass('bg-gray-700/50', 'text-green-400')
+
+      // Close settings
+      fireEvent.click(settingsButton)
+      expect(settingsButton).not.toHaveClass('bg-gray-700/50', 'text-green-400')
+      expect(settingsButton).toHaveClass('hover:bg-gray-700/50')
+    })
   })
 })

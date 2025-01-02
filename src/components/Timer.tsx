@@ -228,8 +228,10 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
         <button
           onClick={() => setShowSettings(!showSettings)}
           className={`p-2 rounded-lg ${
-            isDark ? 'hover:bg-gray-700/50' : 'hover:bg-gray-100'
-          } transition-colors`}
+            showSettings
+              ? `${isDark ? 'bg-gray-700/50 text-green-400' : 'bg-gray-100 text-green-500'}`
+              : `${isDark ? 'hover:bg-gray-700/50' : 'hover:bg-gray-100'}`
+          } transition-all duration-200`}
           aria-label="Toggle Settings"
         >
           <Settings size={20} />
