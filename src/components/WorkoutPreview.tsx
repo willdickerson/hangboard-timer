@@ -26,11 +26,11 @@ const WorkoutPreview: React.FC<WorkoutPreviewProps> = ({
     >
       <button
         onClick={onToggle}
-        className={`w-full p-4 flex items-center justify-between ${
+        className={`w-full p-4 flex items-center justify-between hover:transition-colors ${
           isDark
             ? 'text-gray-200 hover:bg-gray-700/50'
             : 'text-gray-600 hover:bg-gray-100'
-        } transition-colors`}
+        }`}
         aria-expanded={isExpanded}
         aria-controls="workout-steps"
       >
@@ -59,7 +59,7 @@ const WorkoutPreview: React.FC<WorkoutPreviewProps> = ({
           {steps.map((step, index) => (
             <div
               key={index}
-              className={`flex justify-between py-3 px-4 rounded-lg mb-2 transition-colors ${
+              className={`flex justify-between py-3 px-4 rounded-lg mb-2 ${
                 index === currentStep
                   ? 'bg-emerald-500/20 border border-emerald-500/30 text-emerald-600'
                   : `${isDark ? 'text-gray-300 hover:bg-gray-700/30' : 'text-gray-600 hover:bg-gray-50'}`
