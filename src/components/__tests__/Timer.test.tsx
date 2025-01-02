@@ -298,17 +298,29 @@ describe('Timer', () => {
       const settingsButton = screen.getByLabelText('Toggle Settings')
 
       // Initial state (closed)
-      expect(settingsButton).not.toHaveClass('bg-gray-100', 'text-green-500')
-      expect(settingsButton).toHaveClass('hover:bg-gray-100')
+      expect(settingsButton).not.toHaveClass('text-green-400')
+      expect(settingsButton).toHaveClass(
+        'before:bg-gray-100',
+        'before:opacity-0',
+        'hover:before:opacity-100'
+      )
 
       // Open settings
       fireEvent.click(settingsButton)
-      expect(settingsButton).toHaveClass('bg-gray-100', 'text-green-500')
+      expect(settingsButton).toHaveClass(
+        'text-green-400',
+        'before:bg-gray-100',
+        'before:opacity-100'
+      )
 
       // Close settings
       fireEvent.click(settingsButton)
-      expect(settingsButton).not.toHaveClass('bg-gray-100', 'text-green-500')
-      expect(settingsButton).toHaveClass('hover:bg-gray-100')
+      expect(settingsButton).not.toHaveClass('text-green-400')
+      expect(settingsButton).toHaveClass(
+        'before:bg-gray-100',
+        'before:opacity-0',
+        'hover:before:opacity-100'
+      )
     })
 
     it('applies correct dark mode styles to settings button when settings are open/closed', () => {
@@ -317,17 +329,29 @@ describe('Timer', () => {
       const settingsButton = screen.getByLabelText('Toggle Settings')
 
       // Initial state (closed)
-      expect(settingsButton).not.toHaveClass('bg-gray-700/50', 'text-green-400')
-      expect(settingsButton).toHaveClass('hover:bg-gray-700/50')
+      expect(settingsButton).not.toHaveClass('text-green-400')
+      expect(settingsButton).toHaveClass(
+        'dark:before:bg-gray-700/50',
+        'before:opacity-0',
+        'hover:before:opacity-100'
+      )
 
       // Open settings
       fireEvent.click(settingsButton)
-      expect(settingsButton).toHaveClass('bg-gray-700/50', 'text-green-400')
+      expect(settingsButton).toHaveClass(
+        'text-green-400',
+        'dark:before:bg-gray-700/50',
+        'before:opacity-100'
+      )
 
       // Close settings
       fireEvent.click(settingsButton)
-      expect(settingsButton).not.toHaveClass('bg-gray-700/50', 'text-green-400')
-      expect(settingsButton).toHaveClass('hover:bg-gray-700/50')
+      expect(settingsButton).not.toHaveClass('text-green-400')
+      expect(settingsButton).toHaveClass(
+        'dark:before:bg-gray-700/50',
+        'before:opacity-0',
+        'hover:before:opacity-100'
+      )
     })
   })
 })

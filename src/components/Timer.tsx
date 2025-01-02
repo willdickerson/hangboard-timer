@@ -5,14 +5,13 @@ import {
   RotateCcw,
   Volume2,
   VolumeX,
-  Sun,
-  Moon,
   Settings,
 } from 'lucide-react'
 import NoSleep from 'nosleep.js'
 
 import WorkoutPreview from './WorkoutPreview'
 import ProgressBar from './ProgressBar'
+import ThemeToggle from './ThemeToggle'
 import {
   DAVE_MACLEOD_WORKOUT,
   EMIL_ABRAHAMSSON_WORKOUT,
@@ -207,34 +206,36 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
       <div className="flex justify-end space-x-2">
         <button
           onClick={() => setIsMuted(!isMuted)}
-          className={`p-2 rounded-lg ${
-            isDark ? 'hover:bg-gray-700/50' : 'hover:bg-gray-100'
-          } transition-colors`}
+          className={`relative p-2 rounded-lg overflow-hidden
+            before:absolute before:inset-0 before:transition-opacity before:duration-300
+            before:bg-gray-100 dark:before:bg-gray-700/50
+            hover:before:opacity-100 before:opacity-0
+          `}
           aria-label={isMuted ? 'Unmute' : 'Mute'}
         >
-          {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+          <span className="relative z-10">
+            {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+          </span>
         </button>
 
-        <button
-          onClick={onThemeToggle}
-          className={`p-2 rounded-lg ${
-            isDark ? 'hover:bg-gray-700/50' : 'hover:bg-gray-100'
-          } transition-colors`}
-          aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-        >
-          {isDark ? <Sun size={20} /> : <Moon size={20} />}
-        </button>
+        <ThemeToggle isDark={isDark} onToggle={onThemeToggle} />
 
         <button
           onClick={() => setShowSettings(!showSettings)}
-          className={`p-2 rounded-lg ${
-            showSettings
-              ? `${isDark ? 'bg-gray-700/50 text-green-400' : 'bg-gray-100 text-green-500'}`
-              : `${isDark ? 'hover:bg-gray-700/50' : 'hover:bg-gray-100'}`
-          } transition-all duration-200`}
+          className={`relative p-2 rounded-lg overflow-hidden
+            ${showSettings ? 'text-green-400 dark:text-green-400' : ''}
+            before:absolute before:inset-0 before:transition-opacity before:duration-300
+            ${
+              showSettings
+                ? 'before:opacity-100 before:bg-gray-100 dark:before:bg-gray-700/50'
+                : 'before:opacity-0 hover:before:opacity-100 before:bg-gray-100 dark:before:bg-gray-700/50'
+            }
+          `}
           aria-label="Toggle Settings"
         >
-          <Settings size={20} />
+          <span className="relative z-10">
+            <Settings size={20} />
+          </span>
         </button>
       </div>
 
@@ -348,9 +349,9 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
               {currentStepIndex !== -2 && (
                 <button
                   onClick={togglePause}
-                  className={`px-6 py-3 rounded-xl flex items-center gap-2 font-medium transition-all duration-300 
+                  className={`px-6 py-3 rounded-xl flex items-center gap-2 font-medium 
                     ${isPaused ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-amber-600 hover:bg-amber-700'} 
-                    text-white`}
+                    text-white transition-all duration-300`}
                   aria-label={isPaused ? 'Resume Workout' : 'Pause Workout'}
                 >
                   {isPaused ? <Play size={20} /> : <Pause size={20} />}
@@ -360,7 +361,7 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
               <button
                 onClick={resetTimer}
                 className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl flex items-center gap-2 
-                  font-medium transition-colors"
+                  font-medium transition-all duration-300"
                 aria-label="Reset Workout"
               >
                 <RotateCcw size={20} /> Reset
