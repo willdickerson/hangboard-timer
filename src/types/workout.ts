@@ -23,4 +23,5 @@ export interface WorkoutPreviewProps {
   isExpanded: boolean
   onToggle: () => void
   isDark: boolean
+  workoutName: string
 }

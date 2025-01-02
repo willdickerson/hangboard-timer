@@ -14,6 +14,7 @@ const WorkoutPreview: React.FC<WorkoutPreviewProps> = ({
   isExpanded,
   onToggle,
   isDark,
+  workoutName,
 }) => {
   return (
     <div
@@ -33,13 +34,22 @@ const WorkoutPreview: React.FC<WorkoutPreviewProps> = ({
         aria-expanded={isExpanded}
         aria-controls="workout-steps"
       >
-        <span className="font-medium">Workout Overview</span>
+        <div className="flex items-center gap-2">
+          <span className="font-medium">Workout Overview</span>
+          <span
+            className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}
+          >
+            / {workoutName}
+          </span>
+        </div>
         {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
       </button>
 
       {isExpanded && (
         <div
           id="workout-steps"
+          data-testid="workout-steps"
+          role="list"
           className={`p-4 max-h-96 overflow-y-auto scrollbar-thin ${
             isDark
               ? 'scrollbar-thumb-gray-600 scrollbar-track-gray-800/50'

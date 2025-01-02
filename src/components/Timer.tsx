@@ -293,6 +293,11 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
         isExpanded={isPreviewExpanded}
         onToggle={() => setIsPreviewExpanded(!isPreviewExpanded)}
         isDark={isDark}
+        workoutName={
+          selectedWorkout === 'daveMacleod'
+            ? "Dave's 30m Routine"
+            : "Emil's 10m Routine"
+        }
       />
 
       <div

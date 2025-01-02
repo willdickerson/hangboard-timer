@@ -225,5 +225,63 @@ describe('Timer', () => {
         'border-green-500/50 bg-green-500/10 text-green-500'
       )
     })
+
+    it('resets timer when changing workout during an active workout', async () => {
+      render(<Timer isDark={false} onThemeToggle={mockThemeToggle} />)
+
+      // Start the workout
+      await act(async () => {
+        fireEvent.click(screen.getByLabelText('Start Workout'))
+      })
+
+      // Open settings and change workout
+      fireEvent.click(screen.getByLabelText('Toggle Settings'))
+      const emilWorkoutButton = screen
+        .getByText("Emil's 10m Routine")
+        .closest('button')
+      fireEvent.click(emilWorkoutButton!)
+
+      // Verify timer was reset
+      expect(screen.getByText('Get Ready!')).toBeInTheDocument()
+      expect(screen.getByText('0:15')).toBeInTheDocument()
+      expect(screen.getByLabelText('Start Workout')).toBeInTheDocument()
+    })
+
+    it('renders workout selection buttons with correct dark mode styles', () => {
+      render(<Timer isDark={true} onThemeToggle={mockThemeToggle} />)
+
+      // Open settings panel
+      fireEvent.click(screen.getByLabelText('Toggle Settings'))
+
+      // Check unselected button styles in dark mode
+      const daveWorkoutButton = screen
+        .getByText("Dave's 30m Routine")
+        .closest('button')
+      expect(daveWorkoutButton).toHaveClass(
+        'border-green-500/50',
+        'bg-green-500/10',
+        'text-green-500'
+      )
+
+      // Check the other button's dark mode styles
+      const emilWorkoutButton = screen
+        .getByText("Emil's 10m Routine")
+        .closest('button')
+      expect(emilWorkoutButton).toHaveClass(
+        'border-gray-700/50',
+        'text-gray-300',
+        'border-transparent'
+      )
+
+      // Click Emil's workout to switch selection
+      fireEvent.click(emilWorkoutButton!)
+
+      // Verify Dave's workout button now has dark mode unselected styles
+      expect(daveWorkoutButton).toHaveClass(
+        'border-gray-700/50',
+        'text-gray-300',
+        'border-transparent'
+      )
+    })
   })
 })

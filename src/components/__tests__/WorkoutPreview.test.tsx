@@ -18,6 +18,7 @@ describe('WorkoutPreview', () => {
         isExpanded={true}
         onToggle={vi.fn()}
         isDark={false}
+        workoutName="Test Workout"
       />
     )
     expect(screen.getByText('Step 1')).toBeInTheDocument()
@@ -32,6 +33,7 @@ describe('WorkoutPreview', () => {
         isExpanded={false}
         onToggle={vi.fn()}
         isDark={false}
+        workoutName="Test Workout"
       />
     )
     expect(screen.queryByText('Step 1')).not.toBeInTheDocument()
@@ -47,9 +49,29 @@ describe('WorkoutPreview', () => {
         isExpanded={false}
         onToggle={onToggleMock}
         isDark={false}
+        workoutName="Test Workout"
       />
     )
     fireEvent.click(screen.getByRole('button', { name: /Workout Overview/i }))
     expect(onToggleMock).toHaveBeenCalled()
+  })
+
+  it('renders with dark mode scrollbar styles when isDark is true', () => {
+    render(
+      <WorkoutPreview
+        steps={steps}
+        currentStep={0}
+        isExpanded={true}
+        onToggle={vi.fn()}
+        isDark={true}
+        workoutName="Test Workout"
+      />
+    )
+    const scrollContainer =
+      screen.getByRole('list') || screen.getByTestId('workout-steps')
+    expect(scrollContainer).toHaveClass(
+      'scrollbar-thumb-gray-600',
+      'scrollbar-track-gray-800/50'
+    )
   })
 })
