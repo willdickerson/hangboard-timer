@@ -19,6 +19,7 @@ export const useTimer = (workout: Workout) => {
   const [isPaused, setIsPaused] = useState<boolean>(false)
   const [isStarted, setIsStarted] = useState<boolean>(false)
   const [isAudioUnlocked, setIsAudioUnlocked] = useState<boolean>(false)
+  const [hasJustJumped, setHasJustJumped] = useState<boolean>(false)
 
   const unlockAudio = useCallback(async (): Promise<void> => {
     try {
@@ -92,6 +93,45 @@ export const useTimer = (workout: Workout) => {
     return workout.steps[currentStepIndex]?.name || MESSAGES.UNKNOWN_STEP
   }, [currentStepIndex, workout.steps])
 
+  const jumpToStep = useCallback(
+    (stepIndex: number) => {
+      if (
+        stepIndex >= 0 &&
+        stepIndex < workout.steps.length &&
+        currentStepIndex !== TIMER_STATES.COMPLETE
+      ) {
+        setCurrentStepIndex(stepIndex)
+        setTimeLeft(workout.steps[stepIndex].duration)
+        setIsStarted(true)
+        setIsPaused(true)
+        setHasJustJumped(true)
+        noSleep.enable()
+      }
+    },
+    [workout.steps, currentStepIndex]
+  )
+
+  const togglePause = useCallback(() => {
+    if (isPaused && hasJustJumped) {
+      // If we're about to unpause and we just jumped
+      const currentStep = workout.steps[currentStepIndex]
+      if (currentStep?.sound === 'hang') {
+        playSound('hang', false)
+      }
+      setHasJustJumped(false)
+    }
+    setIsPaused(!isPaused)
+  }, [hasJustJumped, isPaused, currentStepIndex, workout.steps, playSound])
+
+  const resetTimer = useCallback(() => {
+    setCurrentStepIndex(TIMER_STATES.READY)
+    setTimeLeft(COUNTDOWN_DURATION)
+    setIsPaused(false)
+    setIsStarted(false)
+    setHasJustJumped(false)
+    noSleep.disable()
+  }, [])
+
   useEffect(() => {
     let interval: number | null = null
 
@@ -150,14 +190,6 @@ export const useTimer = (workout: Workout) => {
     [currentStepIndex, isAudioUnlocked, unlockAudio, playSound]
   )
 
-  const resetTimer = useCallback(() => {
-    setCurrentStepIndex(TIMER_STATES.READY)
-    setTimeLeft(COUNTDOWN_DURATION)
-    setIsPaused(false)
-    setIsStarted(false)
-    noSleep.disable()
-  }, [])
-
   return {
     currentStepIndex,
     timeLeft,
@@ -167,6 +199,7 @@ export const useTimer = (workout: Workout) => {
     getCurrentStepName,
     startTimer,
     resetTimer,
-    togglePause: () => setIsPaused(prev => !prev),
+    togglePause,
+    jumpToStep,
   }
 }

@@ -1,6 +1,16 @@
 import React from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
-import type { WorkoutPreviewProps } from '../types/workout'
+import type { WorkoutStep } from '../types/workout'
+
+interface WorkoutPreviewProps {
+  steps: readonly WorkoutStep[]
+  currentStep: number
+  isExpanded: boolean
+  onToggle: () => void
+  isDark: boolean
+  workoutName: string
+  onStepClick?: (index: number) => void
+}
 
 const formatTime = (seconds: number): string => {
   const mins = Math.floor(seconds / 60)
@@ -15,6 +25,7 @@ const WorkoutPreview: React.FC<WorkoutPreviewProps> = ({
   onToggle,
   isDark,
   workoutName,
+  onStepClick,
 }) => {
   return (
     <div
@@ -56,7 +67,8 @@ const WorkoutPreview: React.FC<WorkoutPreviewProps> = ({
         <div
           id="workout-steps"
           data-testid="workout-steps"
-          role="list"
+          role="region"
+          aria-label="Workout steps"
           className={`p-4 max-h-96 overflow-y-auto scrollbar-thin ${
             isDark
               ? 'scrollbar-thumb-gray-600 scrollbar-track-gray-800/50'
@@ -64,18 +76,35 @@ const WorkoutPreview: React.FC<WorkoutPreviewProps> = ({
           }`}
         >
           {steps.map((step, index) => (
-            <div
+            <button
               key={index}
-              className={`flex justify-between py-3 px-4 rounded-lg mb-2 ${
+              onClick={() => onStepClick?.(index)}
+              disabled={!onStepClick}
+              className={`w-full p-2 rounded text-left transition-colors ${
                 index === currentStep
-                  ? 'bg-emerald-500/20 border border-emerald-500/30 text-emerald-600'
-                  : `${isDark ? 'text-gray-300 hover:bg-gray-700/30' : 'text-gray-600 hover:bg-gray-50'}`
-              }`}
-              aria-current={index === currentStep ? 'step' : undefined}
+                  ? isDark
+                    ? 'bg-green-500/20 text-green-400'
+                    : 'bg-green-50 text-green-600'
+                  : isDark
+                    ? 'hover:bg-gray-700/50 text-gray-300'
+                    : 'hover:bg-gray-50 text-gray-600'
+              } ${onStepClick ? 'cursor-pointer' : 'cursor-default'}`}
             >
-              <span>{step.name}</span>
-              <span className="font-mono">{formatTime(step.duration)}</span>
-            </div>
+              <div className="flex justify-between items-center">
+                <span>{step.name}</span>
+                <span
+                  className={`text-sm ${
+                    index === currentStep
+                      ? ''
+                      : isDark
+                        ? 'text-gray-500'
+                        : 'text-gray-400'
+                  }`}
+                >
+                  {formatTime(step.duration)}
+                </span>
+              </div>
+            </button>
           ))}
         </div>
       )}

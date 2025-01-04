@@ -31,6 +31,7 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
     startTimer,
     resetTimer,
     togglePause,
+    jumpToStep,
   } = useTimer(currentWorkout)
 
   const handleWorkoutChange = useCallback(
@@ -70,6 +71,7 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
         onToggle={() => setIsPreviewExpanded(!isPreviewExpanded)}
         isDark={isDark}
         workoutName={currentWorkout.name}
+        onStepClick={jumpToStep}
       />
 
       <div
