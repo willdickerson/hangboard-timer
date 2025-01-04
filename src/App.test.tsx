@@ -1,7 +1,24 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import App from './App'
+
+// Mock Confetti component
+vi.mock('./components/Confetti', () => {
+  return {
+    default: vi.fn().mockImplementation(() => null),
+  }
+})
+
+// Mock NoSleep.js
+vi.mock('nosleep.js', () => {
+  return {
+    default: vi.fn().mockImplementation(() => ({
+      enable: vi.fn(),
+      disable: vi.fn(),
+    })),
+  }
+})
 
 // Mock localStorage
 const localStorageMock = (() => {

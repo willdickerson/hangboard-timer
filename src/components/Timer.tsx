@@ -4,6 +4,7 @@ import ProgressBar from './ProgressBar'
 import TimerHeader from './TimerHeader'
 import TimerControls from './TimerControls'
 import WorkoutSettings from './WorkoutSettings'
+import Confetti from './Confetti'
 import { workouts } from '../workouts'
 import { useTimer } from '../hooks/useTimer'
 import { formatTime } from '../utils/time'
@@ -47,6 +48,10 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
 
   return (
     <div className="w-full max-w-md space-y-4 py-2">
+      <Confetti
+        key={`confetti-${currentStepIndex === TIMER_STATES.COMPLETE}`}
+        active={currentStepIndex === TIMER_STATES.COMPLETE}
+      />
       <TimerHeader
         isMuted={isMuted}
         showSettings={showSettings}

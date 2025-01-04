@@ -16,6 +16,7 @@ export default defineConfig({
         'src/main.tsx',
         '**/*.test.{js,jsx,ts,tsx}',
         '**/__tests__/**',
+        '**/__mocks__/**',
       ],
     },
   },

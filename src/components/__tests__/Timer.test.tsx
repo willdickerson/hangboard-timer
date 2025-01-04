@@ -15,6 +15,13 @@ vi.mock('nosleep.js', () => {
   }
 })
 
+// Mock Confetti component
+vi.mock('../Confetti', () => {
+  return {
+    default: vi.fn().mockImplementation(() => null),
+  }
+})
+
 describe('Timer', () => {
   const mockThemeToggle = vi.fn()
 
