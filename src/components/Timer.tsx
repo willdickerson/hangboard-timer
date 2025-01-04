@@ -1,17 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import NoSleep from 'nosleep.js'
-
+import React, { useState, useCallback } from 'react'
 import WorkoutPreview from './WorkoutPreview'
 import ProgressBar from './ProgressBar'
 import TimerHeader from './TimerHeader'
 import TimerControls from './TimerControls'
 import WorkoutSettings from './WorkoutSettings'
-import { sounds } from '../audio/sounds'
-import { formatTime } from '../utils/time'
 import { workouts } from '../workouts'
-import type { SoundType } from '../types/workout'
-
-const noSleep = new NoSleep()
+import { useTimer } from '../hooks/useTimer'
+import { formatTime } from '../utils/time'
 
 interface TimerProps {
   isDark: boolean
@@ -19,153 +14,24 @@ interface TimerProps {
 }
 
 const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
-  const [currentStepIndex, setCurrentStepIndex] = useState<number>(-1)
-  const [timeLeft, setTimeLeft] = useState<number>(15)
-  const [isPaused, setIsPaused] = useState<boolean>(false)
   const [isPreviewExpanded, setIsPreviewExpanded] = useState<boolean>(false)
-  const [isStarted, setIsStarted] = useState<boolean>(false)
   const [isMuted, setIsMuted] = useState<boolean>(false)
   const [showSettings, setShowSettings] = useState<boolean>(false)
-  const [isAudioUnlocked, setIsAudioUnlocked] = useState<boolean>(false)
   const [selectedWorkoutId, setSelectedWorkoutId] =
     useState<string>('dave-macleod')
 
   const currentWorkout = workouts[selectedWorkoutId]
-
-  const unlockAudio = useCallback(async (): Promise<void> => {
-    try {
-      const playPromises = Object.values(sounds).map(async audio => {
-        audio.muted = true
-        try {
-          await audio.play()
-          await audio.pause()
-          audio.currentTime = 0
-        } catch (error) {
-          console.error('Error in unlockAudio:', error)
-        }
-      })
-      await Promise.all(playPromises)
-      Object.values(sounds).forEach(audio => {
-        audio.muted = false
-      })
-      setIsAudioUnlocked(true)
-    } catch (error) {
-      console.error('Error in unlockAudio:', error)
-    }
-  }, [])
-
-  const playSound = useCallback(
-    (type: SoundType) => {
-      if (!isMuted && sounds[type]) {
-        sounds[type].currentTime = 0
-        sounds[type].play().catch((error: Error) => {
-          console.log('Error playing sound:', error)
-          if (!isAudioUnlocked) {
-            unlockAudio()
-          }
-        })
-      }
-    },
-    [isMuted, isAudioUnlocked, unlockAudio]
-  )
-
-  const nextStep = useCallback(() => {
-    const nextStepIndex = currentStepIndex + 1
-    if (nextStepIndex >= currentWorkout.steps.length) {
-      setCurrentStepIndex(-2) // Set to complete state
-      setIsStarted(false)
-      playSound('rest')
-      return
-    }
-
-    setCurrentStepIndex(nextStepIndex)
-    setTimeLeft(currentWorkout.steps[nextStepIndex].duration)
-    playSound(currentWorkout.steps[nextStepIndex].sound)
-  }, [currentStepIndex, currentWorkout.steps, playSound])
-
-  const getNextStepName = useCallback((): string => {
-    if (currentStepIndex === -1) {
-      return currentWorkout.steps[0]?.name || ''
-    }
-    const nextIndex = currentStepIndex + 1
-    if (nextIndex >= currentWorkout.steps.length) {
-      return ''
-    }
-    return currentWorkout.steps[nextIndex]?.name || ''
-  }, [currentStepIndex, currentWorkout.steps])
-
-  const getCurrentStepName = useCallback((): string => {
-    if (currentStepIndex === -1) return 'Get Ready!'
-    if (currentStepIndex === -2) return 'Workout Complete!'
-    return currentWorkout.steps[currentStepIndex]?.name || 'Unknown Step'
-  }, [currentStepIndex, currentWorkout.steps])
-
-  useEffect(() => {
-    let interval: number | null = null
-
-    if (isStarted && currentStepIndex >= -1 && !isPaused) {
-      interval = window.setInterval(() => {
-        setTimeLeft(prevTime => {
-          if (prevTime <= 0) {
-            if (interval) clearInterval(interval)
-            return 0
-          }
-          return prevTime - 1
-        })
-      }, 1000)
-    }
-
-    return () => {
-      if (interval) {
-        clearInterval(interval)
-      }
-    }
-  }, [isStarted, currentStepIndex, isPaused])
-
-  useEffect(() => {
-    if (isStarted && timeLeft === 0) {
-      if (currentStepIndex === -1) {
-        if (currentWorkout.steps.length > 0) {
-          setCurrentStepIndex(0)
-          setTimeLeft(currentWorkout.steps[0].duration)
-          playSound(currentWorkout.steps[0].sound)
-        }
-      } else {
-        nextStep()
-      }
-    }
-  }, [
-    timeLeft,
-    isStarted,
+  const {
     currentStepIndex,
-    nextStep,
-    playSound,
-    currentWorkout.steps,
-  ])
-
-  const startTimer = useCallback(async () => {
-    if (currentStepIndex === -1) {
-      if (!isAudioUnlocked) {
-        await unlockAudio()
-      }
-      noSleep.enable()
-      setIsStarted(true)
-      setTimeLeft(15)
-      playSound('begin')
-    }
-  }, [currentStepIndex, isAudioUnlocked, unlockAudio, playSound])
-
-  const resetTimer = useCallback(() => {
-    setCurrentStepIndex(-1)
-    setTimeLeft(15)
-    setIsPaused(false)
-    setIsStarted(false)
-    noSleep.disable()
-  }, [])
-
-  const togglePause = useCallback(() => {
-    setIsPaused(prev => !prev)
-  }, [])
+    timeLeft,
+    isPaused,
+    isStarted,
+    getNextStepName,
+    getCurrentStepName,
+    startTimer,
+    resetTimer,
+    togglePause,
+  } = useTimer(currentWorkout)
 
   const handleWorkoutChange = useCallback(
     (workoutId: string) => {
@@ -240,7 +106,7 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
           isStarted={isStarted}
           isPaused={isPaused}
           currentStepIndex={currentStepIndex}
-          onStart={startTimer}
+          onStart={() => startTimer(isMuted)}
           onPause={togglePause}
           onReset={resetTimer}
         />
