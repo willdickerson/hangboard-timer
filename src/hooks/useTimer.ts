@@ -64,7 +64,7 @@ export const useTimer = (workout: Workout) => {
       if (nextStepIndex >= workout.steps.length) {
         setCurrentStepIndex(TIMER_STATES.COMPLETE)
         setIsStarted(false)
-        playSound('rest', isMuted)
+        playSound('complete', isMuted)
         return
       }
 

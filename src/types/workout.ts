@@ -1,4 +1,4 @@
-export type SoundType = 'begin' | 'hang' | 'rest'
+export type SoundType = 'begin' | 'hang' | 'rest' | 'complete'
 
 export interface WorkoutStep {
   name: string
@@ -15,6 +15,7 @@ export interface Sounds {
   begin: Sound
   hang: Sound
   rest: Sound
+  complete: Sound
 }
 
 export interface Workout {
