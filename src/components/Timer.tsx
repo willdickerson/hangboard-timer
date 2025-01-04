@@ -1,17 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import {
-  Play,
-  Pause,
-  RotateCcw,
-  Volume2,
-  VolumeX,
-  Dumbbell,
-} from 'lucide-react'
 import NoSleep from 'nosleep.js'
 
 import WorkoutPreview from './WorkoutPreview'
 import ProgressBar from './ProgressBar'
-import ThemeToggle from './ThemeToggle'
+import TimerHeader from './TimerHeader'
+import TimerControls from './TimerControls'
+import WorkoutSettings from './WorkoutSettings'
 import { sounds } from '../audio/sounds'
 import { formatTime } from '../utils/time'
 import { workouts } from '../workouts'
@@ -173,92 +167,34 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
     setIsPaused(prev => !prev)
   }, [])
 
-  const handleWorkoutChange = (workoutId: string) => {
-    if (isStarted) {
-      resetTimer()
-    }
-    setSelectedWorkoutId(workoutId)
-  }
+  const handleWorkoutChange = useCallback(
+    (workoutId: string) => {
+      if (isStarted) {
+        resetTimer()
+      }
+      setSelectedWorkoutId(workoutId)
+    },
+    [isStarted, resetTimer]
+  )
 
   return (
     <div className="w-full max-w-md space-y-4 py-2">
-      <div className="flex justify-end space-x-2">
-        <button
-          onClick={() => setIsMuted(!isMuted)}
-          className={`relative p-2 rounded-lg overflow-hidden
-            before:absolute before:inset-0 before:transition-opacity before:duration-300
-            before:bg-gray-100 dark:before:bg-gray-700/50
-            hover:before:opacity-100 before:opacity-0
-          `}
-          aria-label={isMuted ? 'Unmute' : 'Mute'}
-        >
-          <span className="relative z-10">
-            {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-          </span>
-        </button>
-
-        <ThemeToggle isDark={isDark} onToggle={onThemeToggle} />
-
-        <button
-          onClick={() => setShowSettings(!showSettings)}
-          className={`relative p-2 rounded-lg overflow-hidden
-            ${showSettings ? 'text-green-400 dark:text-green-400' : ''}
-            before:absolute before:inset-0 before:transition-opacity before:duration-300
-            ${
-              showSettings
-                ? 'before:opacity-100 before:bg-gray-100 dark:before:bg-gray-700/50'
-                : 'before:opacity-0 hover:before:opacity-100 before:bg-gray-100 dark:before:bg-gray-700/50'
-            }
-          `}
-          aria-label="Toggle Settings"
-        >
-          <span className="relative z-10">
-            <Dumbbell size={20} />
-          </span>
-        </button>
-      </div>
+      <TimerHeader
+        isMuted={isMuted}
+        showSettings={showSettings}
+        isDark={isDark}
+        onMuteToggle={() => setIsMuted(!isMuted)}
+        onSettingsToggle={() => setShowSettings(!showSettings)}
+        onThemeToggle={onThemeToggle}
+      />
 
       {showSettings && (
-        <div
-          className={`${
-            isDark ? 'bg-gray-800/50' : 'bg-white'
-          } p-4 rounded-xl border ${
-            isDark ? 'border-gray-700' : 'border-gray-200'
-          } text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}
-        >
-          <h3
-            className={`font-medium ${
-              isDark ? 'text-white' : 'text-gray-600'
-            } mb-4`}
-          >
-            Workout Selection
-          </h3>
-          <div className="space-y-3">
-            {Object.values(workouts).map(workout => (
-              <button
-                key={workout.id}
-                onClick={() => handleWorkoutChange(workout.id)}
-                className={`w-full p-3 text-left rounded-lg border transition-all duration-200 
-                  ${
-                    selectedWorkoutId === workout.id
-                      ? 'border-green-500/50 bg-green-500/10 text-green-500'
-                      : `${
-                          isDark
-                            ? 'border-gray-700/50 hover:bg-gray-700/20 text-gray-300 border-transparent'
-                            : 'border-gray-200 hover:bg-gray-50 text-gray-600 border-transparent'
-                        }`
-                  }`}
-              >
-                <div>
-                  <span className="font-medium">{workout.name}</span>
-                  <p className="text-xs mt-1 opacity-75">
-                    Duration: {Math.round(workout.duration / 60)} minutes
-                  </p>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
+        <WorkoutSettings
+          workouts={workouts}
+          selectedWorkoutId={selectedWorkoutId}
+          onWorkoutChange={handleWorkoutChange}
+          isDark={isDark}
+        />
       )}
 
       <WorkoutPreview
@@ -300,42 +236,14 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
           isDark={isDark}
         />
 
-        <div className="flex justify-center gap-4 mt-6">
-          {!isStarted && currentStepIndex === -1 ? (
-            <button
-              onClick={startTimer}
-              className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 
-                text-white px-8 py-4 rounded-xl flex items-center gap-2 font-medium 
-                transition-all duration-300 transform hover:scale-105"
-              aria-label="Start Workout"
-            >
-              <Play size={24} /> Start Workout
-            </button>
-          ) : (
-            <>
-              {currentStepIndex !== -2 && (
-                <button
-                  onClick={togglePause}
-                  className={`px-6 py-3 rounded-xl flex items-center gap-2 font-medium 
-                    ${isPaused ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-amber-600 hover:bg-amber-700'} 
-                    text-white transition-all duration-300`}
-                  aria-label={isPaused ? 'Resume Workout' : 'Pause Workout'}
-                >
-                  {isPaused ? <Play size={20} /> : <Pause size={20} />}
-                  {isPaused ? 'Resume' : 'Pause'}
-                </button>
-              )}
-              <button
-                onClick={resetTimer}
-                className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl flex items-center gap-2 
-                  font-medium transition-all duration-300"
-                aria-label="Reset Workout"
-              >
-                <RotateCcw size={20} /> Reset
-              </button>
-            </>
-          )}
-        </div>
+        <TimerControls
+          isStarted={isStarted}
+          isPaused={isPaused}
+          currentStepIndex={currentStepIndex}
+          onStart={startTimer}
+          onPause={togglePause}
+          onReset={resetTimer}
+        />
       </div>
 
       <div className={isDark ? 'text-gray-400' : 'text-gray-500'}>
