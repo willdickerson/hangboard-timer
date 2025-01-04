@@ -1,4 +1,5 @@
-import type { Workout } from './types'
+import type { Workout } from '../types/workout'
+import { calculateWorkoutDuration } from '../utils/time'
 
 const steps = [
   { name: 'Warm-up: Hang on Jug', duration: 10, sound: 'hang' as const },
@@ -38,13 +39,11 @@ const steps = [
   { name: 'Main: 12 Pull-ups', duration: 40, sound: 'hang' as const },
 ]
 
-const totalDuration = steps.reduce((acc, step) => acc + step.duration, 0)
-
 export const daveMacleodWorkout: Workout = {
   id: 'dave-macleod',
   name: "Dave's Routine",
-  description: 'A 31-minute hangboard routine',
-  duration: totalDuration,
+  description: 'A comprehensive hangboard routine with warm-up and main sets',
+  duration: calculateWorkoutDuration(steps),
   attribution: {
     name: "Dave MacLeod's",
     url: 'https://www.youtube.com/watch?v=PebF3NyEGPc',

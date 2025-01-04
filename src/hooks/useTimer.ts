@@ -1,14 +1,19 @@
 import { useState, useEffect, useCallback } from 'react'
 import NoSleep from 'nosleep.js'
 import { sounds } from '../audio/sounds'
-import type { SoundType } from '../types/workout'
-import type { Workout } from '../workouts/types'
+import type { SoundType, Workout } from '../types/workout'
+import {
+  TIMER_STATES,
+  COUNTDOWN_DURATION,
+  TIMER_INTERVAL,
+  MESSAGES,
+} from '../constants/timer'
 
 const noSleep = new NoSleep()
 
 export const useTimer = (workout: Workout) => {
-  const [currentStepIndex, setCurrentStepIndex] = useState<number>(-1)
-  const [timeLeft, setTimeLeft] = useState<number>(15)
+  const [currentStepIndex, setCurrentStepIndex] = useState<number>(TIMER_STATES.READY)
+  const [timeLeft, setTimeLeft] = useState<number>(COUNTDOWN_DURATION)
   const [isPaused, setIsPaused] = useState<boolean>(false)
   const [isStarted, setIsStarted] = useState<boolean>(false)
   const [isAudioUnlocked, setIsAudioUnlocked] = useState<boolean>(false)
@@ -54,7 +59,7 @@ export const useTimer = (workout: Workout) => {
     (isMuted: boolean) => {
       const nextStepIndex = currentStepIndex + 1
       if (nextStepIndex >= workout.steps.length) {
-        setCurrentStepIndex(-2) // Set to complete state
+        setCurrentStepIndex(TIMER_STATES.COMPLETE)
         setIsStarted(false)
         playSound('rest', isMuted)
         return
@@ -68,7 +73,7 @@ export const useTimer = (workout: Workout) => {
   )
 
   const getNextStepName = useCallback((): string => {
-    if (currentStepIndex === -1) {
+    if (currentStepIndex === TIMER_STATES.READY) {
       return workout.steps[0]?.name || ''
     }
     const nextIndex = currentStepIndex + 1
@@ -79,15 +84,15 @@ export const useTimer = (workout: Workout) => {
   }, [currentStepIndex, workout.steps])
 
   const getCurrentStepName = useCallback((): string => {
-    if (currentStepIndex === -1) return 'Get Ready!'
-    if (currentStepIndex === -2) return 'Workout Complete!'
-    return workout.steps[currentStepIndex]?.name || 'Unknown Step'
+    if (currentStepIndex === TIMER_STATES.READY) return MESSAGES.GET_READY
+    if (currentStepIndex === TIMER_STATES.COMPLETE) return MESSAGES.WORKOUT_COMPLETE
+    return workout.steps[currentStepIndex]?.name || MESSAGES.UNKNOWN_STEP
   }, [currentStepIndex, workout.steps])
 
   useEffect(() => {
     let interval: number | null = null
 
-    if (isStarted && currentStepIndex >= -1 && !isPaused) {
+    if (isStarted && currentStepIndex >= TIMER_STATES.READY && !isPaused) {
       interval = window.setInterval(() => {
         setTimeLeft(prevTime => {
           if (prevTime <= 0) {
@@ -96,7 +101,7 @@ export const useTimer = (workout: Workout) => {
           }
           return prevTime - 1
         })
-      }, 1000)
+      }, TIMER_INTERVAL)
     }
 
     return () => {
@@ -108,7 +113,7 @@ export const useTimer = (workout: Workout) => {
 
   useEffect(() => {
     if (isStarted && timeLeft === 0) {
-      if (currentStepIndex === -1) {
+      if (currentStepIndex === TIMER_STATES.READY) {
         if (workout.steps.length > 0) {
           setCurrentStepIndex(0)
           setTimeLeft(workout.steps[0].duration)
@@ -129,13 +134,13 @@ export const useTimer = (workout: Workout) => {
 
   const startTimer = useCallback(
     async (isMuted: boolean) => {
-      if (currentStepIndex === -1) {
+      if (currentStepIndex === TIMER_STATES.READY) {
         if (!isAudioUnlocked) {
           await unlockAudio()
         }
         noSleep.enable()
         setIsStarted(true)
-        setTimeLeft(15)
+        setTimeLeft(COUNTDOWN_DURATION)
         playSound('begin', isMuted)
       }
     },
@@ -143,8 +148,8 @@ export const useTimer = (workout: Workout) => {
   )
 
   const resetTimer = useCallback(() => {
-    setCurrentStepIndex(-1)
-    setTimeLeft(15)
+    setCurrentStepIndex(TIMER_STATES.READY)
+    setTimeLeft(COUNTDOWN_DURATION)
     setIsPaused(false)
     setIsStarted(false)
     noSleep.disable()

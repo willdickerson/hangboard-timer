@@ -1,4 +1,5 @@
-import type { Workout } from './types'
+import type { Workout } from '../types/workout'
+import { calculateWorkoutDuration } from '../utils/time'
 
 const steps = [
   { name: 'Half Crimp', duration: 10, sound: 'hang' as const },
@@ -42,13 +43,11 @@ const steps = [
   { name: 'Middle Two-Finger Crimp', duration: 10, sound: 'hang' as const },
 ]
 
-const totalDuration = steps.reduce((acc, step) => acc + step.duration, 0)
-
 export const emilAbrahamssonWorkout: Workout = {
   id: 'emil-abrahamsson',
   name: "Emil's Routine",
-  description: 'A 10-minute hangboard routine with shorter hangs and rests',
-  duration: totalDuration,
+  description: 'A daily routine for healthy and strong fingers',
+  duration: calculateWorkoutDuration(steps),
   attribution: {
     name: "Emil Abrahamsson's",
     url: 'https://www.youtube.com/watch?v=3FNZdixeuZw',

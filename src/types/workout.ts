@@ -17,6 +17,18 @@ export interface Sounds {
   rest: Sound
 }
 
+export interface Workout {
+  id: string
+  name: string
+  description: string
+  duration: number
+  attribution: {
+    name: string
+    url: string
+  }
+  steps: WorkoutStep[]
+}
+
 export interface WorkoutPreviewProps {
   steps: readonly WorkoutStep[]
   currentStep: number
