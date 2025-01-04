@@ -217,7 +217,7 @@ describe('Timer', () => {
 
       // Select Dave MacLeod's workout
       const daveWorkoutButton = screen
-        .getByText("Dave's 30m Routine")
+        .getByText("Dave's Routine")
         .closest('button')
       fireEvent.click(daveWorkoutButton!)
       expect(daveWorkoutButton).toHaveClass(
@@ -226,7 +226,7 @@ describe('Timer', () => {
 
       // Select Emil Abrahamsson's workout
       const emilWorkoutButton = screen
-        .getByText("Emil's 10m Routine")
+        .getByText("Emil's Routine")
         .closest('button')
       fireEvent.click(emilWorkoutButton!)
       expect(emilWorkoutButton).toHaveClass(
@@ -245,7 +245,7 @@ describe('Timer', () => {
       // Open settings and change workout
       fireEvent.click(screen.getByLabelText('Toggle Settings'))
       const emilWorkoutButton = screen
-        .getByText("Emil's 10m Routine")
+        .getByText("Emil's Routine")
         .closest('button')
       fireEvent.click(emilWorkoutButton!)
 
@@ -263,7 +263,7 @@ describe('Timer', () => {
 
       // Check unselected button styles in dark mode
       const daveWorkoutButton = screen
-        .getByText("Dave's 30m Routine")
+        .getByText("Dave's Routine")
         .closest('button')
       expect(daveWorkoutButton).toHaveClass(
         'border-green-500/50',
@@ -273,7 +273,7 @@ describe('Timer', () => {
 
       // Check the other button's dark mode styles
       const emilWorkoutButton = screen
-        .getByText("Emil's 10m Routine")
+        .getByText("Emil's Routine")
         .closest('button')
       expect(emilWorkoutButton).toHaveClass(
         'border-gray-700/50',

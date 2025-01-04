@@ -13,11 +13,10 @@ import WorkoutPreview from './WorkoutPreview'
 import ProgressBar from './ProgressBar'
 import ThemeToggle from './ThemeToggle'
 import {
-  DAVE_MACLEOD_WORKOUT,
-  EMIL_ABRAHAMSSON_WORKOUT,
   sounds,
   formatTime,
 } from '../constants/workout'
+import { workouts } from '../workouts'
 import type { SoundType } from '../types/workout'
 
 const noSleep = new NoSleep()
@@ -25,23 +24,6 @@ const noSleep = new NoSleep()
 interface TimerProps {
   isDark: boolean
   onThemeToggle: () => void
-}
-
-const WORKOUTS = {
-  daveMacleod: {
-    steps: DAVE_MACLEOD_WORKOUT,
-    attribution: {
-      name: "Dave MacLeod's",
-      url: 'https://www.youtube.com/watch?v=PebF3NyEGPc',
-    },
-  },
-  emilAbrahamsson: {
-    steps: EMIL_ABRAHAMSSON_WORKOUT,
-    attribution: {
-      name: "Emil Abrahamsson's",
-      url: 'https://www.youtube.com/watch?v=3FNZdixeuZw',
-    },
-  },
 }
 
 const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
@@ -53,11 +35,9 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
   const [isMuted, setIsMuted] = useState<boolean>(false)
   const [showSettings, setShowSettings] = useState<boolean>(false)
   const [isAudioUnlocked, setIsAudioUnlocked] = useState<boolean>(false)
-  const [selectedWorkout, setSelectedWorkout] = useState<
-    'daveMacleod' | 'emilAbrahamsson'
-  >('daveMacleod')
+  const [selectedWorkoutId, setSelectedWorkoutId] = useState<string>('dave-macleod')
 
-  const currentWorkout = WORKOUTS[selectedWorkout]
+  const currentWorkout = workouts[selectedWorkoutId]
 
   const unlockAudio = useCallback(async (): Promise<void> => {
     try {
@@ -194,11 +174,11 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
     setIsPaused(prev => !prev)
   }, [])
 
-  const handleWorkoutChange = (workout: 'daveMacleod' | 'emilAbrahamsson') => {
+  const handleWorkoutChange = (workoutId: string) => {
     if (isStarted) {
       resetTimer()
     }
-    setSelectedWorkout(workout)
+    setSelectedWorkoutId(workoutId)
   }
 
   return (
@@ -255,37 +235,27 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
             Workout Selection
           </h3>
           <div className="space-y-3">
-            <button
-              onClick={() => handleWorkoutChange('daveMacleod')}
-              className={`w-full p-3 text-left rounded-lg border transition-all duration-200 
-                ${
-                  selectedWorkout === 'daveMacleod'
-                    ? 'border-green-500/50 bg-green-500/10 text-green-500'
-                    : `${
-                        isDark
-                          ? 'border-gray-700/50 hover:bg-gray-700/20 text-gray-300 border-transparent'
-                          : 'border-gray-200 hover:bg-gray-50 text-gray-600 border-transparent'
-                      }`
-                }`}
-            >
-              <span className="font-medium">Dave&apos;s 30m Routine</span>
-            </button>
-
-            <button
-              onClick={() => handleWorkoutChange('emilAbrahamsson')}
-              className={`w-full p-3 text-left rounded-lg border transition-all duration-200 
-                ${
-                  selectedWorkout === 'emilAbrahamsson'
-                    ? 'border-green-500/50 bg-green-500/10 text-green-500'
-                    : `${
-                        isDark
-                          ? 'border-gray-700/50 hover:bg-gray-700/20 text-gray-300 border-transparent'
-                          : 'border-gray-200 hover:bg-gray-50 text-gray-600 border-transparent'
-                      }`
-                }`}
-            >
-              <span className="font-medium">Emil&apos;s 10m Routine</span>
-            </button>
+            {Object.values(workouts).map(workout => (
+              <button
+                key={workout.id}
+                onClick={() => handleWorkoutChange(workout.id)}
+                className={`w-full p-3 text-left rounded-lg border transition-all duration-200 
+                  ${
+                    selectedWorkoutId === workout.id
+                      ? 'border-green-500/50 bg-green-500/10 text-green-500'
+                      : `${
+                          isDark
+                            ? 'border-gray-700/50 hover:bg-gray-700/20 text-gray-300 border-transparent'
+                            : 'border-gray-200 hover:bg-gray-50 text-gray-600 border-transparent'
+                        }`
+                  }`}
+              >
+                <div>
+                  <span className="font-medium">{workout.name}</span>
+                  <p className="text-xs mt-1 opacity-75">Duration: {Math.round(workout.duration / 60)} minutes</p>
+                </div>
+              </button>
+            ))}
           </div>
         </div>
       )}
@@ -296,11 +266,7 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
         isExpanded={isPreviewExpanded}
         onToggle={() => setIsPreviewExpanded(!isPreviewExpanded)}
         isDark={isDark}
-        workoutName={
-          selectedWorkout === 'daveMacleod'
-            ? "Dave's 30m Routine"
-            : "Emil's 10m Routine"
-        }
+        workoutName={currentWorkout.name}
       />
 
       <div

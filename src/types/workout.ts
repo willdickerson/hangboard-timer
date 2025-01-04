@@ -1,4 +1,4 @@
-export type SoundType = 'begin' | 'start' | 'rest'
+export type SoundType = 'begin' | 'hang' | 'rest'
 
 export interface WorkoutStep {
   name: string
@@ -13,7 +13,7 @@ export interface Sound extends HTMLAudioElement {
 export interface Sounds {
   [key: string]: Sound
   begin: Sound
-  start: Sound
+  hang: Sound
   rest: Sound
 }
 

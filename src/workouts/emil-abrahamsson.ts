@@ -1,0 +1,57 @@
+import type { Workout } from './types'
+
+const steps = [
+  { name: 'Half Crimp', duration: 10, sound: 'hang' as const },
+  { name: 'Rest', duration: 20, sound: 'rest' as const },
+  { name: 'Half Crimp', duration: 10, sound: 'hang' as const },
+  { name: 'Rest', duration: 20, sound: 'rest' as const },
+  { name: 'Half Crimp', duration: 10, sound: 'hang' as const },
+  { name: 'Rest', duration: 20, sound: 'rest' as const },
+  { name: 'Half Crimp', duration: 10, sound: 'hang' as const },
+  { name: 'Rest', duration: 20, sound: 'rest' as const },
+  { name: 'Half Crimp', duration: 10, sound: 'hang' as const },
+  { name: 'Rest', duration: 20, sound: 'rest' as const },
+  { name: 'Half Crimp', duration: 10, sound: 'hang' as const },
+  { name: 'Rest', duration: 20, sound: 'rest' as const },
+  { name: 'Three Finger Drag', duration: 10, sound: 'hang' as const },
+  { name: 'Rest', duration: 20, sound: 'rest' as const },
+  { name: 'Three Finger Drag', duration: 10, sound: 'hang' as const },
+  { name: 'Rest', duration: 20, sound: 'rest' as const },
+  { name: 'Three Finger Drag', duration: 10, sound: 'hang' as const },
+  { name: 'Rest', duration: 20, sound: 'rest' as const },
+  { name: 'Three Finger Drag', duration: 10, sound: 'hang' as const },
+  { name: 'Rest', duration: 20, sound: 'rest' as const },
+  { name: 'Three Finger Drag', duration: 10, sound: 'hang' as const },
+  { name: 'Rest', duration: 20, sound: 'rest' as const },
+  { name: 'Three Finger Drag', duration: 10, sound: 'hang' as const },
+  { name: 'Rest', duration: 20, sound: 'rest' as const },
+  { name: 'Front Two-Finger Drag', duration: 10, sound: 'hang' as const },
+  { name: 'Rest', duration: 20, sound: 'rest' as const },
+  { name: 'Front Two-Finger Drag', duration: 10, sound: 'hang' as const },
+  { name: 'Rest', duration: 20, sound: 'rest' as const },
+  { name: 'Middle Two-Finger Drag', duration: 10, sound: 'hang' as const },
+  { name: 'Rest', duration: 20, sound: 'rest' as const },
+  { name: 'Middle Two-Finger Drag', duration: 10, sound: 'hang' as const },
+  { name: 'Rest', duration: 20, sound: 'rest' as const },
+  { name: 'Front Two-Finger Crimp', duration: 10, sound: 'hang' as const },
+  { name: 'Rest', duration: 20, sound: 'rest' as const },
+  { name: 'Front Two-Finger Crimp', duration: 10, sound: 'hang' as const },
+  { name: 'Rest', duration: 20, sound: 'rest' as const },
+  { name: 'Middle Two-Finger Crimp', duration: 10, sound: 'hang' as const },
+  { name: 'Rest', duration: 20, sound: 'rest' as const} ,
+  { name: 'Middle Two-Finger Crimp', duration: 10, sound: 'hang' as const },
+]
+
+const totalDuration = steps.reduce((acc, step) => acc + step.duration, 0)
+
+export const emilAbrahamssonWorkout: Workout = {
+  id: 'emil-abrahamsson',
+  name: "Emil's Routine",
+  description: 'A 10-minute hangboard routine with shorter hangs and rests',
+  duration: totalDuration,
+  attribution: {
+    name: "Emil Abrahamsson's",
+    url: 'https://www.youtube.com/watch?v=3FNZdixeuZw',
+  },
+  steps,
+}
