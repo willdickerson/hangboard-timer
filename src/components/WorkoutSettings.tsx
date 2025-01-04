@@ -34,7 +34,7 @@ const WorkoutSettings: React.FC<WorkoutSettingsProps> = ({
           <button
             key={workout.id}
             onClick={() => onWorkoutChange(workout.id)}
-            className={`w-full p-3 text-left rounded-lg border transition-all duration-200 
+            className={`w-full p-3 text-left rounded-lg border
               ${
                 selectedWorkoutId === workout.id
                   ? 'border-green-500/50 bg-green-500/10 text-green-500'

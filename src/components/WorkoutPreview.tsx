@@ -73,13 +73,11 @@ const WorkoutPreview: React.FC<WorkoutPreviewProps> = ({
               key={index}
               onClick={() => onStepClick?.(index)}
               disabled={!onStepClick}
-              className={`w-full p-2 rounded text-left transition-colors ${
+              className={`w-full p-2 rounded text-left ${
                 index === currentStep
-                  ? isDark
-                    ? 'bg-green-500/20 text-green-400'
-                    : 'bg-green-50 text-green-600'
+                  ? 'border-green-500/50 bg-green-500/10 text-green-500'
                   : isDark
-                    ? 'hover:bg-gray-700/50 text-gray-300'
+                    ? 'hover:bg-gray-700/20 text-gray-300'
                     : 'hover:bg-gray-50 text-gray-600'
               } ${onStepClick ? 'cursor-pointer' : 'cursor-default'}`}
             >
@@ -88,7 +86,7 @@ const WorkoutPreview: React.FC<WorkoutPreviewProps> = ({
                 <span
                   className={`text-sm ${
                     index === currentStep
-                      ? ''
+                      ? 'opacity-75'
                       : isDark
                         ? 'text-gray-500'
                         : 'text-gray-400'

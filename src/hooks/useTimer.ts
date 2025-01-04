@@ -95,10 +95,7 @@ export const useTimer = (workout: Workout) => {
 
   const jumpToStep = useCallback(
     (stepIndex: number) => {
-      if (
-        stepIndex >= 0 &&
-        stepIndex < workout.steps.length
-      ) {
+      if (stepIndex >= 0 && stepIndex < workout.steps.length) {
         setCurrentStepIndex(stepIndex)
         setTimeLeft(workout.steps[stepIndex].duration)
         setIsStarted(true)
