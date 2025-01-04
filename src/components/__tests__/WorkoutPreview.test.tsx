@@ -107,20 +107,4 @@ describe('WorkoutPreview', () => {
     const stepButton = screen.getByText('Step 1').closest('button')
     expect(stepButton).toBeDisabled()
   })
-
-  it('shows workout duration in the overview', () => {
-    render(
-      <WorkoutPreview
-        steps={steps}
-        currentStep={0}
-        isExpanded={false}
-        onToggle={vi.fn()}
-        isDark={false}
-        workoutName="Test Workout"
-      />
-    )
-    // Total duration is 30s = 0.5m
-    const button = screen.getByRole('button')
-    expect(button).toHaveTextContent('Workout Overview/ Test Workout(1m)')
-  })
 })

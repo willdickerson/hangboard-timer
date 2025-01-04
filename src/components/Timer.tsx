@@ -7,6 +7,7 @@ import WorkoutSettings from './WorkoutSettings'
 import { workouts } from '../workouts'
 import { useTimer } from '../hooks/useTimer'
 import { formatTime } from '../utils/time'
+import { TIMER_STATES } from '../constants/timer'
 
 interface TimerProps {
   isDark: boolean
@@ -99,7 +100,11 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
           </div>
         )}
         <ProgressBar
-          current={currentStepIndex + 1}
+          current={
+            currentStepIndex === TIMER_STATES.COMPLETE
+              ? currentWorkout.steps.length
+              : Math.max(0, currentStepIndex)
+          }
           total={currentWorkout.steps.length}
           isDark={isDark}
         />

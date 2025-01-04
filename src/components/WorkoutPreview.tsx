@@ -51,13 +51,6 @@ const WorkoutPreview: React.FC<WorkoutPreviewProps> = ({
             className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}
           >
             / {workoutName}
-            <span className="ml-1 opacity-75">
-              (
-              {Math.round(
-                steps.reduce((acc, step) => acc + step.duration, 0) / 60
-              )}
-              m)
-            </span>
           </span>
         </div>
         {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}

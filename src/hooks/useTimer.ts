@@ -97,8 +97,7 @@ export const useTimer = (workout: Workout) => {
     (stepIndex: number) => {
       if (
         stepIndex >= 0 &&
-        stepIndex < workout.steps.length &&
-        currentStepIndex !== TIMER_STATES.COMPLETE
+        stepIndex < workout.steps.length
       ) {
         setCurrentStepIndex(stepIndex)
         setTimeLeft(workout.steps[stepIndex].duration)
@@ -108,7 +107,7 @@ export const useTimer = (workout: Workout) => {
         noSleep.enable()
       }
     },
-    [workout.steps, currentStepIndex]
+    [workout.steps]
   )
 
   const togglePause = useCallback(() => {
