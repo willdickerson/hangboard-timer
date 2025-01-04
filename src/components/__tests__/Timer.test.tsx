@@ -2,8 +2,8 @@ import React from 'react'
 import { render, screen, fireEvent, act } from '@testing-library/react'
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import Timer from '../Timer'
-import { DAVE_MACLEOD_WORKOUT } from '../../constants/workout'
-import { sounds } from '../../constants/workout'
+import { daveMacleodWorkout } from '../../workouts/dave-macleod'
+import { sounds } from '../../audio/sounds'
 
 // Mock NoSleep.js
 vi.mock('nosleep.js', () => {
@@ -54,10 +54,10 @@ describe('Timer', () => {
       expect(screen.getByLabelText('Pause Workout')).toBeInTheDocument()
 
       // Advance through each workout step
-      for (let i = 0; i < DAVE_MACLEOD_WORKOUT.length; i++) {
+      for (let i = 0; i < daveMacleodWorkout.steps.length; i++) {
         await act(async () => {
           await vi.advanceTimersByTimeAsync(
-            DAVE_MACLEOD_WORKOUT[i].duration * 1000
+            daveMacleodWorkout.steps[i].duration * 1000
           )
           await vi.runOnlyPendingTimersAsync()
         })

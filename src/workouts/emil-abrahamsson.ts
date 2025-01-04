@@ -38,7 +38,7 @@ const steps = [
   { name: 'Front Two-Finger Crimp', duration: 10, sound: 'hang' as const },
   { name: 'Rest', duration: 20, sound: 'rest' as const },
   { name: 'Middle Two-Finger Crimp', duration: 10, sound: 'hang' as const },
-  { name: 'Rest', duration: 20, sound: 'rest' as const} ,
+  { name: 'Rest', duration: 20, sound: 'rest' as const },
   { name: 'Middle Two-Finger Crimp', duration: 10, sound: 'hang' as const },
 ]
 

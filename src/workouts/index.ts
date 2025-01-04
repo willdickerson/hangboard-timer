@@ -2,10 +2,7 @@ import { daveMacleodWorkout } from './dave-macleod'
 import { emilAbrahamssonWorkout } from './emil-abrahamsson'
 import type { Workout } from './types'
 
-const workoutsList: Workout[] = [
-  daveMacleodWorkout,
-  emilAbrahamssonWorkout,
-]
+const workoutsList: Workout[] = [daveMacleodWorkout, emilAbrahamssonWorkout]
 
 export const workouts: Record<string, Workout> = workoutsList.reduce(
   (acc, workout) => ({

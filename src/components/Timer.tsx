@@ -12,10 +12,8 @@ import NoSleep from 'nosleep.js'
 import WorkoutPreview from './WorkoutPreview'
 import ProgressBar from './ProgressBar'
 import ThemeToggle from './ThemeToggle'
-import {
-  sounds,
-  formatTime,
-} from '../constants/workout'
+import { sounds } from '../audio/sounds'
+import { formatTime } from '../utils/time'
 import { workouts } from '../workouts'
 import type { SoundType } from '../types/workout'
 
@@ -35,7 +33,8 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
   const [isMuted, setIsMuted] = useState<boolean>(false)
   const [showSettings, setShowSettings] = useState<boolean>(false)
   const [isAudioUnlocked, setIsAudioUnlocked] = useState<boolean>(false)
-  const [selectedWorkoutId, setSelectedWorkoutId] = useState<string>('dave-macleod')
+  const [selectedWorkoutId, setSelectedWorkoutId] =
+    useState<string>('dave-macleod')
 
   const currentWorkout = workouts[selectedWorkoutId]
 
@@ -252,7 +251,9 @@ const Timer: React.FC<TimerProps> = ({ isDark, onThemeToggle }) => {
               >
                 <div>
                   <span className="font-medium">{workout.name}</span>
-                  <p className="text-xs mt-1 opacity-75">Duration: {Math.round(workout.duration / 60)} minutes</p>
+                  <p className="text-xs mt-1 opacity-75">
+                    Duration: {Math.round(workout.duration / 60)} minutes
+                  </p>
                 </div>
               </button>
             ))}
