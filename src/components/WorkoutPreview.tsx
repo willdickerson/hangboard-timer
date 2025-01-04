@@ -73,18 +73,18 @@ const WorkoutPreview: React.FC<WorkoutPreviewProps> = ({
               key={index}
               onClick={() => onStepClick?.(index)}
               disabled={!onStepClick}
-              className={`w-full p-2 rounded text-left ${
+              className={`w-full p-2 rounded text-left border ${
                 index === currentStep
                   ? 'border-green-500/50 bg-green-500/10 text-green-500'
                   : isDark
-                    ? 'hover:bg-gray-700/20 text-gray-300'
-                    : 'hover:bg-gray-50 text-gray-600'
+                    ? 'hover:bg-gray-700/20 text-gray-300 border-transparent'
+                    : 'hover:bg-gray-50 text-gray-600 border-transparent'
               } ${onStepClick ? 'cursor-pointer' : 'cursor-default'}`}
             >
               <div className="flex justify-between items-center">
                 <span>{step.name}</span>
                 <span
-                  className={`text-sm ${
+                  className={`text-sm font-mono tabular-nums ${
                     index === currentStep
                       ? 'opacity-75'
                       : isDark
