@@ -4,6 +4,8 @@ export const formatTime = (seconds: number): string => {
   return `${mins}:${secs.toString().padStart(2, '0')}`
 }
 
-export const calculateWorkoutDuration = (steps: { duration: number }[]): number => {
+export const calculateWorkoutDuration = (
+  steps: { duration: number }[]
+): number => {
   return steps.reduce((total, step) => total + step.duration, 0)
 }

@@ -48,7 +48,7 @@ const WorkoutSettings: React.FC<WorkoutSettingsProps> = ({
             <div>
               <span className="font-medium">{workout.name}</span>
               <p className="text-xs mt-1 opacity-75">
-                Duration: {Math.round(workout.duration / 60)} minutes
+                Duration: {Math.round(workout.duration / 60)}m
               </p>
             </div>
           </button>

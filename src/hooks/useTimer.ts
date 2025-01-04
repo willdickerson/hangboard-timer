@@ -12,7 +12,9 @@ import {
 const noSleep = new NoSleep()
 
 export const useTimer = (workout: Workout) => {
-  const [currentStepIndex, setCurrentStepIndex] = useState<number>(TIMER_STATES.READY)
+  const [currentStepIndex, setCurrentStepIndex] = useState<number>(
+    TIMER_STATES.READY
+  )
   const [timeLeft, setTimeLeft] = useState<number>(COUNTDOWN_DURATION)
   const [isPaused, setIsPaused] = useState<boolean>(false)
   const [isStarted, setIsStarted] = useState<boolean>(false)
@@ -85,7 +87,8 @@ export const useTimer = (workout: Workout) => {
 
   const getCurrentStepName = useCallback((): string => {
     if (currentStepIndex === TIMER_STATES.READY) return MESSAGES.GET_READY
-    if (currentStepIndex === TIMER_STATES.COMPLETE) return MESSAGES.WORKOUT_COMPLETE
+    if (currentStepIndex === TIMER_STATES.COMPLETE)
+      return MESSAGES.WORKOUT_COMPLETE
     return workout.steps[currentStepIndex]?.name || MESSAGES.UNKNOWN_STEP
   }, [currentStepIndex, workout.steps])
 
