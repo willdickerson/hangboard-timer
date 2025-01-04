@@ -2,8 +2,8 @@ import React from 'react'
 import { render, screen, fireEvent, act } from '@testing-library/react'
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import Timer from '../Timer'
-import { DAVE_MACLEOD_WORKOUT } from '../../constants/workout'
-import { sounds } from '../../constants/workout'
+import { daveMacleodWorkout } from '../../workouts/dave-macleod'
+import { sounds } from '../../audio/sounds'
 
 // Mock NoSleep.js
 vi.mock('nosleep.js', () => {
@@ -54,10 +54,10 @@ describe('Timer', () => {
       expect(screen.getByLabelText('Pause Workout')).toBeInTheDocument()
 
       // Advance through each workout step
-      for (let i = 0; i < DAVE_MACLEOD_WORKOUT.length; i++) {
+      for (let i = 0; i < daveMacleodWorkout.steps.length; i++) {
         await act(async () => {
           await vi.advanceTimersByTimeAsync(
-            DAVE_MACLEOD_WORKOUT[i].duration * 1000
+            daveMacleodWorkout.steps[i].duration * 1000
           )
           await vi.runOnlyPendingTimersAsync()
         })
@@ -217,7 +217,7 @@ describe('Timer', () => {
 
       // Select Dave MacLeod's workout
       const daveWorkoutButton = screen
-        .getByText("Dave's 30m Routine")
+        .getByText("Dave's Routine")
         .closest('button')
       fireEvent.click(daveWorkoutButton!)
       expect(daveWorkoutButton).toHaveClass(
@@ -226,7 +226,7 @@ describe('Timer', () => {
 
       // Select Emil Abrahamsson's workout
       const emilWorkoutButton = screen
-        .getByText("Emil's 10m Routine")
+        .getByText("Emil's Routine")
         .closest('button')
       fireEvent.click(emilWorkoutButton!)
       expect(emilWorkoutButton).toHaveClass(
@@ -245,7 +245,7 @@ describe('Timer', () => {
       // Open settings and change workout
       fireEvent.click(screen.getByLabelText('Toggle Settings'))
       const emilWorkoutButton = screen
-        .getByText("Emil's 10m Routine")
+        .getByText("Emil's Routine")
         .closest('button')
       fireEvent.click(emilWorkoutButton!)
 
@@ -263,7 +263,7 @@ describe('Timer', () => {
 
       // Check unselected button styles in dark mode
       const daveWorkoutButton = screen
-        .getByText("Dave's 30m Routine")
+        .getByText("Dave's Routine")
         .closest('button')
       expect(daveWorkoutButton).toHaveClass(
         'border-green-500/50',
@@ -273,7 +273,7 @@ describe('Timer', () => {
 
       // Check the other button's dark mode styles
       const emilWorkoutButton = screen
-        .getByText("Emil's 10m Routine")
+        .getByText("Emil's Routine")
         .closest('button')
       expect(emilWorkoutButton).toHaveClass(
         'border-gray-700/50',

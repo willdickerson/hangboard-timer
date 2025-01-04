@@ -5,7 +5,7 @@ import WorkoutPreview from '../WorkoutPreview'
 import type { WorkoutStep } from '../../types/workout'
 
 const steps: WorkoutStep[] = [
-  { name: 'Step 1', duration: 10, sound: 'start' },
+  { name: 'Step 1', duration: 10, sound: 'hang' },
   { name: 'Step 2', duration: 20, sound: 'rest' },
 ]
 
@@ -67,11 +67,44 @@ describe('WorkoutPreview', () => {
         workoutName="Test Workout"
       />
     )
-    const scrollContainer =
-      screen.getByRole('list') || screen.getByTestId('workout-steps')
+    const scrollContainer = screen.getByRole('region', {
+      name: /workout steps/i,
+    })
     expect(scrollContainer).toHaveClass(
-      'scrollbar-thumb-gray-600',
-      'scrollbar-track-gray-800/50'
+      'scrollbar-thin',
+      'scrollbar-thumb-gray-600'
     )
+  })
+
+  it('calls onStepClick when a step is clicked', () => {
+    const onStepClickMock = vi.fn()
+    render(
+      <WorkoutPreview
+        steps={steps}
+        currentStep={0}
+        isExpanded={true}
+        onToggle={vi.fn()}
+        onStepClick={onStepClickMock}
+        isDark={false}
+        workoutName="Test Workout"
+      />
+    )
+    fireEvent.click(screen.getByText('Step 2'))
+    expect(onStepClickMock).toHaveBeenCalledWith(1)
+  })
+
+  it('disables step clicks when onStepClick is not provided', () => {
+    render(
+      <WorkoutPreview
+        steps={steps}
+        currentStep={0}
+        isExpanded={true}
+        onToggle={vi.fn()}
+        isDark={false}
+        workoutName="Test Workout"
+      />
+    )
+    const stepButton = screen.getByText('Step 1').closest('button')
+    expect(stepButton).toBeDisabled()
   })
 })

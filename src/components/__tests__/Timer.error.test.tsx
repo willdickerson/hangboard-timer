@@ -2,7 +2,7 @@ import React from 'react'
 import { render, screen, fireEvent, act } from '@testing-library/react'
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import Timer from '../Timer'
-import { sounds } from '../../constants/workout'
+import { sounds } from '../../audio/sounds'
 
 vi.mock('nosleep.js', () => {
   return {
